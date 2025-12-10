@@ -191,3 +191,56 @@ void Game::sRender()
 
     m_window.display();
 }
+
+void Game:sUserInput()
+{
+    // TODO: handle user input here
+    //       note that you should only be setting the player's input component variables here
+    //       you should not implement the player's movement logic here
+    //       the movement system will read the variables you set in this function
+
+    sf::Event event;
+    while (m_window.pollEvent(event))
+    {
+        // this event triggers when the window is closed
+        if (event.type == sf::Event::Closed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::W:
+                std::cout << "W Key Pressed\n";
+                // TODO: set player's input component "up" to true
+                break;
+            default: break;
+            }
+        }
+
+        // this event is triggered when a key is released
+        if (event.type == sf::Event::KeyReleased)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::W:
+                std::cout << "W Key Released\n";
+                // TODO: set player's input component "up" to false
+                break;
+            default: break;
+            }
+        }
+
+        if (event.type == sf::Event::MouseButtonPressed)
+        {
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+                std::cout << "Left Mouse Button Clicked at {" << event.mouseButton.x << ", " << event.mouseButton.y << "}\n";
+                // call spawnBullet here
+            }
+
+            if (event.mouseButton.button == sf::Mouse::Right)
+            {
+                std::cout << "Right Mouse Button Clicked at {" << event.mouseButton.x << ", " << event.mouseButton.y << "}\n";
+                // call spawnSpecialWeapon here
+            }
+        }
+    }
+}
