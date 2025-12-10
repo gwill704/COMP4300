@@ -37,7 +37,7 @@ $(OUTPUT):$(OBJ_FILES) Makefile
 
 # typing 'make clean' will remove all intermediate build files
 clean:
-	rm -f $(OBJ_SFMLGAME) .bin/sfmlgame
+	rm -f $(OBJ_FILES) .bin/sfmlgame
 
 # typing 'make run' will compile and run the program
 run: $(OUTPUT)

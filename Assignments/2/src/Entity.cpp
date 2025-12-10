@@ -8,7 +8,7 @@ Entity::Entity(const size_t id, const std::string& tag)
 
 bool Entity::isActive() const
 {
-    return 0;
+    return m_active;
 }
 
 
@@ -20,7 +20,7 @@ const std::string& Entity::tag() const
 
 const size_t Entity::id() const
 {
-    return 0;
+    return m_id;
 }
 
 
