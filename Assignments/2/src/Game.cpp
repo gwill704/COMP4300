@@ -13,14 +13,33 @@ void Game::init(const std::string & config)
     // TODO: read in config file here
     //       use the premade PlayerConfig, EnemyConfig, BulletConfig variables
 
-    std::string path = "bin/config.txt";
+    std::string path = "../bin/config.txt";
+    std::string instruction;
+
+
     std::ifstream fin(path);
-
-    fin >> m_playerConfig.SR >> m_playerConfig.CR; 
-
+    if (!fin.is_open())
+        {
+            std::cerr << "ERROR: Default constructor Config() tried to read config.txt, and" 
+                      << " maybe it doesn't exist" << std::endl;
+            exit(-1);
+        }
+    
+    fin >> instruction >> m_windowConfig.W   >> m_windowConfig.H   >> m_windowConfig.FL  >> m_windowConfig.FS; 
+    fin >> instruction >> m_fontConfig.F     >> m_fontConfig.S     >> m_fontConfig.C.R   >> m_fontConfig.C.G   >> m_fontConfig.C.B;
+    fin >> instruction >> m_playerConfig.SR  >> m_playerConfig.CR  >> m_playerConfig.S   >> m_playerConfig.F.R >> m_playerConfig.F.G >> m_playerConfig.F.B
+                       >> m_playerConfig.O.R >> m_playerConfig.O.G >> m_playerConfig.O.B >> m_playerConfig.OT  >> m_playerConfig.V;
+    fin >> instruction >> m_enemyConfig.SR   >> m_enemyConfig.CR   >> m_enemyConfig.SMIN >> m_enemyConfig.SMAX
+                       >> m_enemyConfig.O.R  >> m_enemyConfig.O.G  >> m_enemyConfig.O.B  >> m_enemyConfig.OT   >> m_enemyConfig.VMIN >> m_enemyConfig.VMAX
+                       >> m_enemyConfig.L    >> m_enemyConfig.SI;
+    fin >> instruction >> m_bulletConfig.SR  >> m_bulletConfig.CR  >> m_bulletConfig.S   >> m_bulletConfig.F.R >> m_bulletConfig.F.G >> m_bulletConfig.F.B
+                       >> m_bulletConfig.O.R >> m_bulletConfig.O.G >> m_bulletConfig.O.B >> m_bulletConfig.OT  >> m_bulletConfig.V   >> m_bulletConfig.L;
+    
     // set up default window parameters
-    m_window.create(sf::VideoMode(1280, 720), "Assignment 2");
-    m_window.setFramerateLimit(60);
+    if (!m_windowConfig.FS) m_window.create(sf::VideoMode(m_windowConfig.W, m_windowConfig.H), "Assignment 2");
+    else                    m_window.create(sf::VideoMode(m_windowConfig.W, m_windowConfig.H), "Assignment 2", sf::Style::Fullscreen);
+
+    m_window.setFramerateLimit(m_windowConfig.FL);
 
     spawnPlayer();
 
@@ -68,10 +87,16 @@ void Game::spawnPlayer()
     auto entity = m_entities.addEntity("player");
 
     // Give this entity a Transform so it spawns at (200, 200) with velocity (1, 1) and angle 0
-    entity->cTransform = std::make_shared<CTransform>(Vec2(200.0f, 200.0f), Vec2(1.0f, 1.0f), 0.0f);
+    float mx = m_window.getSize().x / 2.0f;
+    float my = m_window.getSize().y / 2.0f;
+
+    entity->cTransform = std::make_shared<CTransform>(Vec2(mx, my), Vec2(m_playerConfig.S, m_playerConfig.S), 0);
 
     // The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickness 4
-    entity->cShape = std::make_shared<CShape>(32.0f, 8, sf::Color(10, 10, 10), sf::Color(255, 0, 0), 4.0f);
+    entity->cShape = std::make_shared<CShape>(m_playerConfig.SR, m_playerConfig.V, 
+                                              sf::Color(m_playerConfig.F.R, m_playerConfig.F.G, m_playerConfig.F.B), 
+                                              sf::Color(m_playerConfig.O.R, m_playerConfig.O.G, m_playerConfig.O.B),
+                                              m_playerConfig.OT);
 
     // Add an input component to the player so that we can use inputs
     entity->cInput = std::make_shared<CInput>();
@@ -173,22 +198,19 @@ void Game::sRender()
     m_window.clear();
 
 
-    // set the position of the shape based on the entity's transform->pos
-    m_player->cShape->circle.setPosition(m_player->cTransform->pos.x, m_player->cTransform->pos.y);
-
-    // set the rotation of the sape based on the entity's transform->angle
-    m_player->cTransform->angle += 1.0f;
-    m_player->cShape->circle.setRotation(m_player->cTransform->angle);
-
-    // draw the entity's sf::CircleShape
-    m_window.draw(m_player->cShape->circle);
-
-    /*
+    // draw all the entity's sf::CircleShape   
     for (auto e : m_entities.getEntities())
     {
+        std::cout << "New entity: " << e->id() << std::endl;
+        e->cShape->circle.setPosition(e->cTransform->pos.x, e->cTransform->pos.y);
+
+        e->cTransform->angle += 0.1f;
+        e->cShape->circle.setRotation(e->cTransform->angle);
+
         m_window.draw(e->cShape->circle);
     }
-    */
+    
+    std::cout << "HELLO\n";
 
     m_window.display();
 }

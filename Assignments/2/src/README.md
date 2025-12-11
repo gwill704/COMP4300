@@ -89,7 +89,7 @@ Outline Color OR, OG, OB int, int, int
 Outline Thickness OT int
 Min / Max Vertices VMIN, VMAX int, int
 Small Lifespan L int
-Spawn interval SP int
+Spawn interval SI int
 
 #### Bullet Specification
 - Bullet SR CR FR FG FB OR OG OB OT V L
@@ -100,7 +100,7 @@ Outline Color OR, OG, OB int, int, int
 Outline Thickness OT int
 Shape Vertices V int
 Small Lifespan L int
-Spawn interval SP int
+
 
 
 ## Recommendation of approaching
