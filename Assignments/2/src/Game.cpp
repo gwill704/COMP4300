@@ -41,7 +41,11 @@ void Game::init(const std::string & config)
 
     m_window.setFramerateLimit(m_windowConfig.FL);
 
+
+    srand(time(NULL));
+
     spawnPlayer();
+    spawnEnemy();
 
 }
 
@@ -65,6 +69,7 @@ void Game::run()
 
         
         sRender();
+
 
         // increment the current frame
         // may need to be moved when pause implemented
@@ -122,7 +127,15 @@ void Game::spawnEnemy()
     entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(0.0f, 0.0f), 0.0f);
 
     // The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickness 4
-    entity->cShape = std::make_shared<CShape>(16.0f, 3, sf::Color(0, 0, 255), sf::Color(255, 255, 255), 4.0f);
+    Color ec = {static_cast<u_short>(rand() % 255),
+                static_cast<u_short>(rand() % 255),
+                static_cast<u_short>(rand() % 255)};
+
+    //float ev = 
+    //std::cout << ev << std::endl;
+
+    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, 4, sf::Color(ec.R, ec.G, ec.B), 
+                                              sf::Color(m_enemyConfig.O.R, m_enemyConfig.O.G, m_enemyConfig.O.B), m_enemyConfig.OT);
 
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -197,20 +210,17 @@ void Game::sRender()
     //.      sample drawing of the player Entity that we have created
     m_window.clear();
 
-
     // draw all the entity's sf::CircleShape   
     for (auto e : m_entities.getEntities())
     {
-        std::cout << "New entity: " << e->id() << std::endl;
+        //std::cout << "New entity: " << e->id() << std::endl;
         e->cShape->circle.setPosition(e->cTransform->pos.x, e->cTransform->pos.y);
 
-        e->cTransform->angle += 0.1f;
+        e->cTransform->angle += 1.0f;
         e->cShape->circle.setRotation(e->cTransform->angle);
 
         m_window.draw(e->cShape->circle);
     }
-    
-    std::cout << "HELLO\n";
 
     m_window.display();
 }
