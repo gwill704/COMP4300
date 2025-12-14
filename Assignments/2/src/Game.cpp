@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 Game::Game(const std::string & config)
 {
@@ -40,7 +41,6 @@ void Game::init(const std::string & config)
     else                    m_window.create(sf::VideoMode(m_windowConfig.W, m_windowConfig.H), "Assignment 2", sf::Style::Fullscreen);
 
     m_window.setFramerateLimit(m_windowConfig.FL);
-
 
     srand(time(NULL));
 
@@ -121,21 +121,21 @@ void Game::spawnEnemy()
     auto entity = m_entities.addEntity("enemy");
 
     // Give this entity a Transform so it spawns at (200, 200) with velocity (1, 1) and angle 0
-    float ex = rand() % m_window.getSize().x;
-    float ey = rand() % m_window.getSize().y;
+    float ex = (rand() % ((m_window.getSize().x - m_enemyConfig.SR) - 2 * m_playerConfig.SR + 1)) + 2 * m_playerConfig.SR;
+    float ey = (rand() % ((m_window.getSize().y - m_enemyConfig.SR) - 2 * m_playerConfig.SR + 1)) + 2 * m_playerConfig.SR;
 
-    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(0.0f, 0.0f), 0.0f);
+    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(1.0f, 1.0f), 0.0f);
 
     // The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickness 4
     Color ec = {static_cast<u_short>(rand() % 255),
                 static_cast<u_short>(rand() % 255),
                 static_cast<u_short>(rand() % 255)};
 
-    //float ev = 
-    //std::cout << ev << std::endl;
+    float ev = m_enemyConfig.VMIN + (rand() % (1 + m_enemyConfig.VMAX - m_enemyConfig.VMIN));
 
-    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, 4, sf::Color(ec.R, ec.G, ec.B), 
-                                              sf::Color(m_enemyConfig.O.R, m_enemyConfig.O.G, m_enemyConfig.O.B), m_enemyConfig.OT);
+    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, ev, sf::Color(ec.R, ec.G, ec.B), 
+                                              sf::Color(m_enemyConfig.O.R, m_enemyConfig.O.G, m_enemyConfig.O.B),
+                                              m_enemyConfig.OT);
 
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -158,6 +158,12 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
     // TODO: implement the spawning of a bullet which travels toward target
     //.      - bullet speed is given as a scalar speed
     //.      - you must set the velocity by using formula in notes
+    auto bullet = m_entities.addEntity("bullet");
+
+    /*
+    bullet->cTransform = std::make_shared<CTransform>(Vec2 (m_player->cTransform->pos.x, m_player->cTransform->pos.y)
+                                                      Vec2 ())
+    */
 }
 
 
@@ -172,8 +178,11 @@ void Game::sMovement()
     //.       you should read the m_player->cInput component to determine if the player is moving
 
     // Sample movement speed update
-    m_player->cTransform->pos.x += m_player->cTransform->velocity.x;
-    m_player->cTransform->pos.y += m_player->cTransform->velocity.y;
+    for (auto e : m_entities.getEntities())
+    {
+        e->cTransform->pos.x += e->cTransform->velocity.x;
+        e->cTransform->pos.y += e->cTransform->velocity.y;
+    }
 }
 
 void Game::sLifespan()

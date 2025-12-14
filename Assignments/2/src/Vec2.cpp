@@ -88,3 +88,8 @@ float Vec2::length() const
     //return pow((this->x * this->x + this->y * this->y), .5); this one is a bit slower
     return sqrt(x*x + y*y);
 }
+
+void Vec2::normalize()
+{
+    *this /= this->length();
+}
