@@ -161,9 +161,6 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
     auto bullet = m_entities.addEntity("bullet");
 
     auto tpos   = entity->cTransform->pos.dist(target).normalize();
-    std::cout << "tpos = " << tpos.y << std::endl;
-    
-    
 
     bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.SR, 
                                                       tpos * m_bulletConfig.S, 
