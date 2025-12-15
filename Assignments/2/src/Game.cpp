@@ -124,7 +124,12 @@ void Game::spawnEnemy()
     float ex = (rand() % ((m_window.getSize().x - m_enemyConfig.SR) - 2 * m_playerConfig.SR + 1)) + 2 * m_playerConfig.SR;
     float ey = (rand() % ((m_window.getSize().y - m_enemyConfig.SR) - 2 * m_playerConfig.SR + 1)) + 2 * m_playerConfig.SR;
 
-    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(1.0f, 1.0f), 0.0f);
+    Vec2  es (rand(), rand());
+    es.normalize();
+
+    float s = (((float) rand()) / (float) RAND_MAX) * (m_enemyConfig.SMAX - m_enemyConfig.SMIN) + m_enemyConfig.SMIN; 
+
+    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), es * s, 0.0f);
 
     // The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickness 4
     Color ec = {static_cast<u_short>(rand() % 255),
@@ -136,6 +141,10 @@ void Game::spawnEnemy()
     entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, ev, sf::Color(ec.R, ec.G, ec.B), 
                                               sf::Color(m_enemyConfig.O.R, m_enemyConfig.O.G, m_enemyConfig.O.B),
                                               m_enemyConfig.OT);
+
+    
+                                            
+    entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
 
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -166,9 +175,9 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
                                                       tpos * m_bulletConfig.S, 
                                                       0.0f);
     
-    bullet->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V,
-                                              sf::Color(m_bulletConfig.F.R, m_bulletConfig.F.G, m_bulletConfig.F.B), 
-                                              sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
+    bullet->cShape     = std::make_shared<CShape>     (m_bulletConfig.SR, m_bulletConfig.V,
+                                                      sf::Color(m_bulletConfig.F.R, m_bulletConfig.F.G, m_bulletConfig.F.B), 
+                                                      sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
 }
 
 
@@ -217,6 +226,20 @@ void Game::sCollision()
 {
     // TODO: implement all proper collisions between entities
     //        be sure to use the collision radius, NOT the shape radius
+    for (auto e : m_entities.getEntities("enemy"))
+    {
+        if ((e->cTransform->pos.x + e->cCollision->radius) > m_window.getSize().x ||
+            (e->cTransform->pos.x - e->cCollision->radius) < 0.0)
+        {
+            e->cTransform->velocity.x *= -1;
+        }
+
+        if ((e->cTransform->pos.y + e->cCollision->radius) > m_window.getSize().y ||
+            (e->cTransform->pos.y - e->cCollision->radius) < 0.0)  
+        {
+            e->cTransform->velocity.y *= -1;
+        }
+    }
 }
 
 void Game::sEnemySpawner()
@@ -225,7 +248,10 @@ void Game::sEnemySpawner()
     //          
     //          (use m_currentFrame - m_lastEnemySpawnTime) to determine
     //          how long it has been since the last enemy spawned
-
+    if ((m_currentFrame - m_lastEnemySpawnTime) / m_enemyConfig.SI == 1)
+    {
+        spawnEnemy();
+    }
 }
 
 void Game::sRender()
