@@ -77,9 +77,9 @@ void Vec2::operator /= (const float val)
 }
 
 
-float Vec2::dist(const Vec2 & rhs) const
+Vec2 Vec2::dist(const Vec2 & rhs) const
 {
-    return (*this - rhs).length();
+    return (rhs - (*this));
 }
 
 
@@ -89,7 +89,8 @@ float Vec2::length() const
     return sqrt(x*x + y*y);
 }
 
-void Vec2::normalize()
+Vec2 Vec2::normalize()
 {
     *this /= this->length();
+    return *this;
 }

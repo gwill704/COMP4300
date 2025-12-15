@@ -46,7 +46,7 @@ void Game::init(const std::string & config)
 
     spawnPlayer();
     spawnEnemy();
-
+    
 }
 
 void Game::run()
@@ -160,10 +160,18 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
     //.      - you must set the velocity by using formula in notes
     auto bullet = m_entities.addEntity("bullet");
 
-    /*
-    bullet->cTransform = std::make_shared<CTransform>(Vec2 (m_player->cTransform->pos.x, m_player->cTransform->pos.y)
-                                                      Vec2 ())
-    */
+    auto tpos   = entity->cTransform->pos.dist(target).normalize();
+    std::cout << "tpos = " << tpos.y << std::endl;
+    
+    
+
+    bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.SR, 
+                                                      tpos * m_bulletConfig.S, 
+                                                      0.0f);
+    
+    bullet->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V,
+                                              sf::Color(m_bulletConfig.F.R, m_bulletConfig.F.G, m_bulletConfig.F.B), 
+                                              sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
 }
 
 
@@ -276,6 +284,8 @@ void Game::sUserInput()
             {
                 std::cout << "Left Mouse Button Clicked at {" << event.mouseButton.x << ", " << event.mouseButton.y << "}\n";
                 // call spawnBullet here
+                spawnBullet(m_player, m_entities.getEntities("enemy")[0]->cTransform->pos);
+
             }
 
             if (event.mouseButton.button == sf::Mouse::Right)

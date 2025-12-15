@@ -13,9 +13,6 @@ int main()
     // Posted by anamika email, modified by community. See post 'Timeline' for change history
     // Retrieved 2025-12-10, License - CC BY-SA 3.0
 
-    Vec2 a (1,0);
-    a.normalize();
-    std::cout << "Normalized vec: " << a.x << ", " << a.y << std::endl;
     /*
     clock_t starts = clock();
      /////// HERE IS THE TEST

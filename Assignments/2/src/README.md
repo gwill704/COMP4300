@@ -92,7 +92,7 @@ Small Lifespan L int
 Spawn interval SI int
 
 #### Bullet Specification
-- Bullet SR CR FR FG FB OR OG OB OT V L
+- Bullet SR CR S FR FG FB OR OG OB OT V L
 Shape Radius SR int
 Collision Radius CR int
 Min / Max Speed SMIN, SMAX float, float
