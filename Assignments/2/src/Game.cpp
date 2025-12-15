@@ -95,7 +95,7 @@ void Game::spawnPlayer()
     float mx = m_window.getSize().x / 2.0f;
     float my = m_window.getSize().y / 2.0f;
 
-    entity->cTransform = std::make_shared<CTransform>(Vec2(mx, my), Vec2(m_playerConfig.S, m_playerConfig.S), 0);
+    entity->cTransform = std::make_shared<CTransform>(Vec2(mx, my), Vec2(0.0f, 0.0f), 0);
 
     // The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickness 4
     entity->cShape = std::make_shared<CShape>(m_playerConfig.SR, m_playerConfig.V, 
@@ -184,6 +184,16 @@ void Game::sMovement()
 {
     // TODO: implement all entity movement in this function
     //.       you should read the m_player->cInput component to determine if the player is moving
+    
+    
+    m_player->cTransform->velocity = Vec2(0.0f, 0.0f);
+    if (m_player->cInput->up)     m_player->cTransform->velocity += Vec2( 0.0f, -1.0f);
+    if (m_player->cInput->down)   m_player->cTransform->velocity += Vec2( 0.0f,  1.0f);
+    if (m_player->cInput->left)   m_player->cTransform->velocity += Vec2(-1.0f,  0.0f);
+    if (m_player->cInput->right)  m_player->cTransform->velocity += Vec2( 1.0f,  0.0f);
+
+    m_player->cTransform->velocity.normalize();
+    m_player->cTransform->velocity *= m_playerConfig.S;
 
     // Sample movement speed update
     for (auto e : m_entities.getEntities())
@@ -253,13 +263,26 @@ void Game::sUserInput()
     while (m_window.pollEvent(event))
     {
         // this event triggers when the window is closed
-        if (event.type == sf::Event::Closed)
+        if (event.type == sf::Event::KeyPressed)
         {
             switch (event.key.code)
             {
             case sf::Keyboard::W:
                 std::cout << "W Key Pressed\n";
                 // TODO: set player's input component "up" to true
+                m_player->cInput->up = true;
+                break;
+            case sf::Keyboard::A:
+                std::cout << "A Key Pressed\n";
+                m_player->cInput->left = true;
+                break;
+            case sf::Keyboard::D:
+                std::cout << "D Key Pressed\n";
+                m_player->cInput->right = true;
+                break;
+            case sf::Keyboard::S:
+                std::cout << "S Key Pressed\n";
+                m_player->cInput->down = true;
                 break;
             default: break;
             }
@@ -272,7 +295,20 @@ void Game::sUserInput()
             {
             case sf::Keyboard::W:
                 std::cout << "W Key Released\n";
-                // TODO: set player's input component "up" to false
+                // TODO: set player's input component "up" to true
+                m_player->cInput->up = false;
+                break;
+            case sf::Keyboard::A:
+                std::cout << "A Key Released\n";
+                m_player->cInput->left = false;
+                break;
+            case sf::Keyboard::D:
+                std::cout << "D Key Released\n";
+                m_player->cInput->right = false;
+                break;
+            case sf::Keyboard::S:
+                std::cout << "S Key Released\n";
+                m_player->cInput->down = false;
                 break;
             default: break;
             }
