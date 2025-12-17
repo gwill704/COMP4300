@@ -86,13 +86,18 @@ Vec2 Vec2::dist(const Vec2 & rhs) const
 float Vec2::length() const
 {
     //return pow((this->x * this->x + this->y * this->y), .5); this one is a bit slower
-    float mod2 = x*x + y*y;
-    if (mod2 == 0) return 1;
-    return sqrt(mod2);
+    return sqrt( x*x + y*y );
 }
+
+float Vec2::length2() const
+{
+    return ( x*x + y*y );
+}
+
 
 Vec2 Vec2::normalize()
 {
+    if (this->length() == 0) return *this;
     *this /= this->length();
     return *this;
 }

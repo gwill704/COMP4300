@@ -59,14 +59,14 @@ void Game::run()
 
         m_entities.update();
 
-       // if (!m_paused)
-       // {
+        if (!m_paused)
+        {
             sEnemySpawner();
             sMovement();
             sCollision();
-            sUserInput();
-       // }
+        }
 
+        sUserInput();
         
         sRender();
 
@@ -307,6 +307,10 @@ void Game::sUserInput()
                 std::cout << "S Key Pressed\n";
                 m_player->cInput->down = true;
                 break;
+
+            case sf::Keyboard::P:
+                if(m_paused) m_paused = false;
+                else         m_paused = true;
             default: break;
             }
         }
@@ -333,6 +337,10 @@ void Game::sUserInput()
                 std::cout << "S Key Released\n";
                 m_player->cInput->down = false;
                 break;
+
+            case sf::Keyboard::Escape:
+                std::cout << "Esc key released\n";
+                m_running = false;
             default: break;
             }
         }

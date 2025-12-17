@@ -24,5 +24,6 @@ public:
 
     Vec2  dist    (const Vec2 & rhs) const;
     float length () const;
+    float length2 () const;
     Vec2  normalize (); 
 };
