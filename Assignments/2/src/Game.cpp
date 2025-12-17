@@ -44,9 +44,7 @@ void Game::init(const std::string & config)
 
     srand(time(NULL));
 
-    spawnPlayer();
-    spawnEnemy();
-    
+    spawnPlayer();  
 }
 
 void Game::run()
@@ -62,8 +60,8 @@ void Game::run()
         if (!m_paused)
         {
             sEnemySpawner();
-            sMovement();
             sCollision();
+            sMovement();
         }
 
         sUserInput();
@@ -105,6 +103,8 @@ void Game::spawnPlayer()
 
     // Add an input component to the player so that we can use inputs
     entity->cInput = std::make_shared<CInput>();
+
+    entity->cCollision = std::make_shared<CCollision>(m_playerConfig.CR);
 
     // Since we want this Entity to be our player, set our Game's player variable to be this Entity
     // This goes slightly against the EntityManager paradigm, but we use the player so much it's worth it
@@ -178,6 +178,8 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
     bullet->cShape     = std::make_shared<CShape>     (m_bulletConfig.SR, m_bulletConfig.V,
                                                       sf::Color(m_bulletConfig.F.R, m_bulletConfig.F.G, m_bulletConfig.F.B), 
                                                       sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
+
+    bullet->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
 }
 
 
@@ -226,18 +228,49 @@ void Game::sCollision()
 {
     // TODO: implement all proper collisions between entities
     //        be sure to use the collision radius, NOT the shape radius
+
+    Vec2 & player_pos = m_player->cTransform->pos;
+    float & player_col = m_player->cCollision->radius;
+
+    if ((player_pos.x + player_col) > m_window.getSize().x)   m_player->cInput->right = false; 
+    if ((player_pos.x - player_col) < 0.0)                    m_player->cInput->left  = false;
+    if ((player_pos.y + player_col) > m_window.getSize().y)   m_player->cInput->down  = false;
+    if ((player_pos.y - player_col) < 0.0)                    m_player->cInput->up    = false;
+
     for (auto e : m_entities.getEntities("enemy"))
     {
-        if ((e->cTransform->pos.x + e->cCollision->radius) > m_window.getSize().x ||
-            (e->cTransform->pos.x - e->cCollision->radius) < 0.0)
+        Vec2 & e_pos = e->cTransform->pos;
+        float & e_col = e->cCollision->radius;
+
+        if ((e_pos.x + e_col) > m_window.getSize().x ||
+            (e_pos.x - e_col) < 0.0)
         {
             e->cTransform->velocity.x *= -1;
         }
 
-        if ((e->cTransform->pos.y + e->cCollision->radius) > m_window.getSize().y ||
-            (e->cTransform->pos.y - e->cCollision->radius) < 0.0)  
+        if ((e_pos.y + e_col) > m_window.getSize().y ||
+            (e_pos.y - e_col) < 0.0)  
         {
             e->cTransform->velocity.y *= -1;
+        }
+
+
+        if (e_pos.dist(player_pos).length2() < (e_col + player_col) * (e_col + player_col))
+        {
+            m_player->destroy();
+            spawnPlayer();
+        }
+
+        for (auto bullet : m_entities.getEntities("bullet"))
+        {
+            Vec2 & bullet_pos = bullet->cTransform->pos;
+            float & bullet_col = bullet->cCollision->radius;
+
+            if (bullet_pos.dist(e_pos).length2() < (bullet_col + e_col) * (bullet_col + e_col))
+            {
+                bullet->destroy();
+                e->destroy();
+            }
         }
     }
 }
@@ -291,20 +324,16 @@ void Game::sUserInput()
             switch (event.key.code)
             {
             case sf::Keyboard::W:
-                std::cout << "W Key Pressed\n";
                 // TODO: set player's input component "up" to true
                 m_player->cInput->up = true;
                 break;
             case sf::Keyboard::A:
-                std::cout << "A Key Pressed\n";
                 m_player->cInput->left = true;
                 break;
             case sf::Keyboard::D:
-                std::cout << "D Key Pressed\n";
                 m_player->cInput->right = true;
                 break;
             case sf::Keyboard::S:
-                std::cout << "S Key Pressed\n";
                 m_player->cInput->down = true;
                 break;
 
@@ -321,25 +350,20 @@ void Game::sUserInput()
             switch (event.key.code)
             {
             case sf::Keyboard::W:
-                std::cout << "W Key Released\n";
                 // TODO: set player's input component "up" to true
                 m_player->cInput->up = false;
                 break;
             case sf::Keyboard::A:
-                std::cout << "A Key Released\n";
                 m_player->cInput->left = false;
                 break;
             case sf::Keyboard::D:
-                std::cout << "D Key Released\n";
                 m_player->cInput->right = false;
                 break;
             case sf::Keyboard::S:
-                std::cout << "S Key Released\n";
                 m_player->cInput->down = false;
                 break;
 
             case sf::Keyboard::Escape:
-                std::cout << "Esc key released\n";
                 m_running = false;
             default: break;
             }
@@ -349,10 +373,8 @@ void Game::sUserInput()
         {
             if (event.mouseButton.button == sf::Mouse::Left)
             {
-                std::cout << "Left Mouse Button Clicked at {" << event.mouseButton.x << ", " << event.mouseButton.y << "}\n";
-                // call spawnBullet here
-                spawnBullet(m_player, m_entities.getEntities("enemy")[0]->cTransform->pos);
-
+                Vec2 mouse_pos (event.mouseButton.x, event.mouseButton.y);
+                spawnBullet(m_player, mouse_pos);
             }
 
             if (event.mouseButton.button == sf::Mouse::Right)
