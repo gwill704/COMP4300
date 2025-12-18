@@ -64,6 +64,8 @@ void Game::run()
 
         m_entities.update();
 
+        if (!m_player->isActive()) spawnPlayer();
+        
         if (!m_paused)
         {
             sEnemySpawner();
@@ -302,7 +304,6 @@ void Game::sCollision()
         {
             m_player->destroy();
             e       ->destroy();
-            spawnPlayer();
             m_score = 0;
         }
 
