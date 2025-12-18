@@ -44,6 +44,12 @@ void Game::init(const std::string & config)
 
     srand(time(NULL));
 
+    if(!m_font.loadFromFile(m_fontConfig.F)) std::cerr << "No font file provided\n";
+    m_text.setFont(m_font);
+    m_text.setCharacterSize(m_fontConfig.S);
+    m_text.setColor(sf::Color(m_fontConfig.C.R, m_fontConfig.C.G, m_fontConfig.C.B, 255));
+    m_text.setPosition(0.0f, 0.0f);
+
     spawnPlayer();  
 }
 
@@ -137,7 +143,7 @@ void Game::spawnEnemy()
                 static_cast<u_short>(rand() % 255),
                 static_cast<u_short>(rand() % 255)};
 
-    float ev = m_enemyConfig.VMIN + (rand() % (1 + m_enemyConfig.VMAX - m_enemyConfig.VMIN));
+    int ev = m_enemyConfig.VMIN + (rand() % (1 + m_enemyConfig.VMAX - m_enemyConfig.VMIN));
 
     entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, ev, sf::Color(ec.R, ec.G, ec.B), 
                                               sf::Color(m_enemyConfig.O.R, m_enemyConfig.O.G, m_enemyConfig.O.B),
@@ -146,6 +152,8 @@ void Game::spawnEnemy()
     
                                             
     entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
+
+    entity->cScore = std::make_shared<CScore>(100 * ev);
 
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -230,7 +238,6 @@ void Game::sLifespan()
     {
         if (!e->cLifespan)
         {
-            std::cout << "Entity with id " << e->id() << " was skipped because it has no lifespan\n";
             continue;
         }
 
@@ -243,9 +250,18 @@ void Game::sLifespan()
         {
             const sf::Color & e_fillcolor = e->cShape->circle.getFillColor();
             const sf::Color & e_outcolor  = e->cShape->circle.getOutlineColor();
-            float alpha = e->cLifespan->remaining * e_fillcolor.a;
-            e->cShape->circle.setFillColor(sf::Color(e_fillcolor.r, e_fillcolor.g, e_fillcolor.b, e_fillcolor.a * ((float) e->cLifespan->remaining / e->cLifespan->total)));
-            e->cShape->circle.setOutlineColor(sf::Color(e_outcolor.r, e_outcolor.g, e_outcolor.b, e_outcolor.a * ((float) e->cLifespan->remaining / e->cLifespan->total)));
+            float alpha = ( (float) e->cLifespan->remaining / (float) e->cLifespan->total )  * 255;
+            e->cShape->circle.setFillColor(sf::Color(e_fillcolor.r, e_fillcolor.g, e_fillcolor.b, alpha));
+            e->cShape->circle.setOutlineColor(sf::Color(e_outcolor.r, e_outcolor.g, e_outcolor.b, alpha));
+            std::cout << "sLifespan: entity id " << e->id() << " 's lifespan = " << ((float) e->cLifespan->remaining / (float) e->cLifespan->total)<< std::endl;
+            std::cout << "sLifespan: entity id " << e->id() << " 's alpha = " << alpha << std::endl;
+            //continue;
+        }
+
+        if (e->cLifespan && e->cLifespan->remaining == 0)
+        {
+            e->destroy();
+            std::cout << "Entity with id " << e->id() << " has been destroyed by cLifespan" << std::endl;
         }
     }
 }
@@ -286,6 +302,7 @@ void Game::sCollision()
             m_player->destroy();
             e       ->destroy();
             spawnPlayer();
+            m_score = 0;
         }
 
         for (auto bullet : m_entities.getEntities("bullet"))
@@ -297,6 +314,7 @@ void Game::sCollision()
             {
                 bullet->destroy();
                 e->destroy();
+                m_score += e->cScore->score;
             }
         }
     }
@@ -331,6 +349,11 @@ void Game::sRender()
 
         m_window.draw(e->cShape->circle);
     }
+
+    // draw score
+    m_text.setString((std::string) "SCORE " + std::to_string(m_score));
+    m_window.draw(m_text);
+    
 
     m_window.display();
 }

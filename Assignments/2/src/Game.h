@@ -7,7 +7,7 @@
 
 struct Color        { u_short R, G, B;                                                };
 struct WindowConfig { int W,  H,  FL; bool FS;                                         };
-struct FontConfig   { std::string F;    int S;              Color C;                   };
+struct FontConfig   { std::string F;    u_int S;              Color C;                   };
 struct PlayerConfig { u_int SR, CR, OT, V;                  Color F, O;  float S;           };
 struct EnemyConfig  { u_int SR, CR, OT, VMIN, VMAX, L, SI;  Color O;     float SMIN, SMAX;  };
 struct BulletConfig { u_int SR, CR, OT, V, L;               Color F, O;  float S;           };
