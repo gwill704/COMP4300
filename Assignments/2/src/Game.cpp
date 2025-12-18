@@ -65,7 +65,7 @@ void Game::run()
         m_entities.update();
 
         if (!m_player->isActive()) spawnPlayer();
-        
+
         if (!m_paused)
         {
             sEnemySpawner();
@@ -88,6 +88,7 @@ void Game::run()
 void Game::setPaused (bool paused)
 {
     // TODO
+    m_paused = paused;
 }
 
     // respawn the player in the middle of the screen 
@@ -256,15 +257,11 @@ void Game::sLifespan()
             float alpha = ( (float) e->cLifespan->remaining / (float) e->cLifespan->total )  * 255;
             e->cShape->circle.setFillColor(sf::Color(e_fillcolor.r, e_fillcolor.g, e_fillcolor.b, alpha));
             e->cShape->circle.setOutlineColor(sf::Color(e_outcolor.r, e_outcolor.g, e_outcolor.b, alpha));
-            std::cout << "sLifespan: entity id " << e->id() << " 's lifespan = " << ((float) e->cLifespan->remaining / (float) e->cLifespan->total)<< std::endl;
-            std::cout << "sLifespan: entity id " << e->id() << " 's alpha = " << alpha << std::endl;
-            //continue;
         }
 
         if (e->cLifespan && e->cLifespan->remaining == 0)
         {
             e->destroy();
-            std::cout << "Entity with id " << e->id() << " has been destroyed by cLifespan" << std::endl;
         }
     }
 }
@@ -391,8 +388,8 @@ void Game::sUserInput()
                 break;
 
             case sf::Keyboard::P:
-                if(m_paused) m_paused = false;
-                else         m_paused = true;
+                if(m_paused) setPaused(false);
+                else         setPaused(true);
             default: break;
             }
         }
@@ -427,7 +424,7 @@ void Game::sUserInput()
             if (event.mouseButton.button == sf::Mouse::Left)
             {
                 Vec2 mouse_pos (event.mouseButton.x, event.mouseButton.y);
-                spawnBullet(m_player, mouse_pos);
+                if (!m_paused) spawnBullet(m_player, mouse_pos);
             }
 
             if (event.mouseButton.button == sf::Mouse::Right)
