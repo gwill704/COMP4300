@@ -60,8 +60,8 @@ void Game::run()
         if (!m_paused)
         {
             sEnemySpawner();
-            sCollision();
             sMovement();
+            sCollision();
         }
 
         sUserInput();
@@ -180,6 +180,8 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
                                                       sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
 
     bullet->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+
+    bullet->cLifespan = std::make_shared<CLifespan>(m_bulletConfig.L);
 }
 
 
@@ -222,6 +224,25 @@ void Game::sLifespan()
     //.         scale its alpha channel properly
     //      if it has lifespan and its time is up
     //          destroy the entity
+
+    for (auto e : m_entities.getEntities())
+    {
+        if (!e->cLifespan)
+        {
+            std::cout << "Entity with id " << e->id() << " was skipped because it has no lifespan\n";
+            continue;
+        }
+
+        if (e->cLifespan->remaining > 0)
+        {
+            e->cLifespan->remaining--;
+        }
+
+        if (e->cLifespan && e->isActive())
+        {
+            sf::Color e_color = e->cShape->circle.getFillColor();
+        }
+    }
 }
 
 void Game::sCollision()
@@ -232,10 +253,10 @@ void Game::sCollision()
     Vec2 & player_pos = m_player->cTransform->pos;
     float & player_col = m_player->cCollision->radius;
 
-    if ((player_pos.x + player_col) > m_window.getSize().x)   m_player->cInput->right = false; 
-    if ((player_pos.x - player_col) < 0.0)                    m_player->cInput->left  = false;
-    if ((player_pos.y + player_col) > m_window.getSize().y)   m_player->cInput->down  = false;
-    if ((player_pos.y - player_col) < 0.0)                    m_player->cInput->up    = false;
+    if ((player_pos.x + player_col) > m_window.getSize().x)   m_player->cTransform->pos.x += m_window.getSize().x - (player_pos.x + player_col);
+    if ((player_pos.x - player_col) < 0.0)                    m_player->cTransform->pos.x -= player_pos.x - player_col;
+    if ((player_pos.y + player_col) > m_window.getSize().y)   m_player->cTransform->pos.y += m_window.getSize().y - (player_pos.y + player_col);
+    if ((player_pos.y - player_col) < 0.0)                    m_player->cTransform->pos.y -= player_pos.y - player_col; 
 
     for (auto e : m_entities.getEntities("enemy"))
     {
@@ -258,6 +279,7 @@ void Game::sCollision()
         if (e_pos.dist(player_pos).length2() < (e_col + player_col) * (e_col + player_col))
         {
             m_player->destroy();
+            e       ->destroy();
             spawnPlayer();
         }
 
