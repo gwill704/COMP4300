@@ -6,6 +6,7 @@
 #include  <SFML/Graphics.hpp>
 
 struct Color        { u_short R, G, B;                                                };
+struct Wave         { float w, a;                                                      };
 struct WindowConfig { int W,  H,  FL; bool FS;                                         };
 struct FontConfig   { std::string F;    u_int S;              Color C;                   };
 struct PlayerConfig { u_int SR, CR, OT, V;                  Color F, O;  float S;           };
@@ -26,6 +27,7 @@ class Game
     int                 m_score = 0;
     int                 m_currentFrame = 0;
     int                 m_lastEnemySpawnTime = 0;
+    Wave                m_waves;
     bool                m_paused = false;   // whether we update game logic
     bool                m_running = true;   // whether the game is running
 

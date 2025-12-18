@@ -35,6 +35,7 @@ void Game::init(const std::string & config)
                        >> m_enemyConfig.L    >> m_enemyConfig.SI;
     fin >> instruction >> m_bulletConfig.SR  >> m_bulletConfig.CR  >> m_bulletConfig.S   >> m_bulletConfig.F.R >> m_bulletConfig.F.G >> m_bulletConfig.F.B
                        >> m_bulletConfig.O.R >> m_bulletConfig.O.G >> m_bulletConfig.O.B >> m_bulletConfig.OT  >> m_bulletConfig.V   >> m_bulletConfig.L;
+    fin >> instruction >> m_waves.w >> m_waves.a;
     
     // set up default window parameters
     if (!m_windowConfig.FS) m_window.create(sf::VideoMode(m_windowConfig.W, m_windowConfig.H), "Assignment 2");
@@ -346,6 +347,7 @@ void Game::sRender()
 
         e->cTransform->angle += 1.0f;
         e->cShape->circle.setRotation(e->cTransform->angle);
+        e->cShape->circle.setScale(1 + cosf(e->cTransform->angle * m_waves.w) * m_waves.a, 1 + cosf(e->cTransform->angle * m_waves.w) * m_waves.a);
 
         m_window.draw(e->cShape->circle);
     }
