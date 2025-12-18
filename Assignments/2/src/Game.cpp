@@ -62,6 +62,7 @@ void Game::run()
             sEnemySpawner();
             sMovement();
             sCollision();
+            sLifespan();
         }
 
         sUserInput();
@@ -240,14 +241,18 @@ void Game::sLifespan()
 
         if (e->cLifespan && e->isActive())
         {
-            sf::Color e_color = e->cShape->circle.getFillColor();
+            const sf::Color & e_fillcolor = e->cShape->circle.getFillColor();
+            const sf::Color & e_outcolor  = e->cShape->circle.getOutlineColor();
+            float alpha = e->cLifespan->remaining * e_fillcolor.a;
+            e->cShape->circle.setFillColor(sf::Color(e_fillcolor.r, e_fillcolor.g, e_fillcolor.b, e_fillcolor.a * ((float) e->cLifespan->remaining / e->cLifespan->total)));
+            e->cShape->circle.setOutlineColor(sf::Color(e_outcolor.r, e_outcolor.g, e_outcolor.b, e_outcolor.a * ((float) e->cLifespan->remaining / e->cLifespan->total)));
         }
     }
 }
 
 void Game::sCollision()
 {
-    // TODO: implement all proper collisions between entities
+    // TODO: implement all proper collisions between entities 
     //        be sure to use the collision radius, NOT the shape radius
 
     Vec2 & player_pos = m_player->cTransform->pos;
