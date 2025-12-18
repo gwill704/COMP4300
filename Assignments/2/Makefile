@@ -13,12 +13,12 @@ CXX		:= g++
 OUTPUT  := sfmlgame
 
 # if you need to manually specify your SFML install dir, do so here
-SFML_DIR  := .
+SFML_DIR  := /opt/homebrew/opt/sfml@2/
 
 # compiler and linker flags
 CXX_FLAGS  := -O3 -std=c++17
 INCLUDES   := -I./src -I$(SFML_DIR)/include 
-LDFLAGS	   := -O3 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)
+LDFLAGS	   := -O3 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)/lib
 
 # the source files for the ecs game engine
 SRC_FILES := $(wildcard src/*.cpp)
