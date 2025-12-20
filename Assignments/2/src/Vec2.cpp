@@ -12,6 +12,12 @@ Vec2::Vec2(float xin, float yin)
 
 }
 
+Vec2::Vec2(float angle)
+    : x(cosf(angle)), y(sinf(angle))
+{
+
+}
+
 
 bool Vec2::operator == (const Vec2 & rhs) const
 {

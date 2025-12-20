@@ -66,3 +66,11 @@ public:
 
     CInput() {}
 };
+
+class CSmallEnemies
+{
+public:
+    bool spawn_smallenemies = false;
+    CSmallEnemies(bool activate) 
+        : spawn_smallenemies(activate) {}
+};

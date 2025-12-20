@@ -159,6 +159,8 @@ void Game::spawnEnemy()
 
     entity->cScore = std::make_shared<CScore>(100 * ev);
 
+    entity->cSmallEnemies = std::make_shared<CSmallEnemies>(true);
+
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
 }
@@ -172,6 +174,21 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e)
     // - spawn a number of small enemies equal to the vertices of the original enemy
     // - set each small enemy to the same color as the original, half the size
     // - small enemies are worth double points of the original enemy
+
+    if (!e->cSmallEnemies->spawn_smallenemies) return;
+
+    float d_angle = 2 * M_PI /(float) e->cShape->circle.getPointCount();
+    for (float angle = 0; angle < 2 * M_PI; angle += d_angle)
+    {
+        auto se = m_entities.addEntity("enemy");
+        se->cTransform = std::make_shared<CTransform>(e->cTransform->pos, Vec2(angle) * e->cTransform->velocity.length(), 0.0f);
+        se->cShape     = std::make_shared<CShape>(m_enemyConfig.SR * 0.5, e->cShape->circle.getPointCount(), e->cShape->circle.getFillColor(),
+                                                  e->cShape->circle.getOutlineColor(), e->cShape->circle.getOutlineThickness());
+        se->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR * 0.5);
+        se->cLifespan  = std::make_shared<CLifespan>(m_enemyConfig.L);
+        se->cSmallEnemies = std::make_shared<CSmallEnemies>(false);
+        se->cScore = std::make_shared<CScore>(e->cScore->score * 2);
+    }
 }
 
 // spawns a bullet from a given entity to a target location
@@ -300,6 +317,7 @@ void Game::sCollision()
         if (e_pos.dist(player_pos).length2() < (e_col + player_col) * (e_col + player_col))
         {
             m_player->destroy();
+            spawnSmallEnemies(e);
             e       ->destroy();
             m_score = 0;
         }
@@ -312,6 +330,7 @@ void Game::sCollision()
             if (bullet_pos.dist(e_pos).length2() < (bullet_col + e_col) * (bullet_col + e_col))
             {
                 bullet->destroy();
+                spawnSmallEnemies(e);
                 e->destroy();
                 m_score += e->cScore->score;
             }
