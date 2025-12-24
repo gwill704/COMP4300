@@ -19,6 +19,7 @@ class Game
     EntityManager       m_entities;         // vector of entities to maintain
     sf::Font            m_font;             // the font we will use to draw
     sf::Text            m_text;             // the score text to be drawn to the screen 
+    sf::Text            m_cooldown_text;
     WindowConfig        m_windowConfig;  
     FontConfig          m_fontConfig;   
     PlayerConfig        m_playerConfig;
@@ -27,8 +28,10 @@ class Game
     int                 m_score = 0;
     int                 m_currentFrame = 0;
     int                 m_lastEnemySpawnTime = 0;
+    int                 m_nuclear_cooldown = 0;
+    u_int               m_nuclear_cooldown_interval = 60;
     Wave                m_waves;
-    u_int               m_nuclear_gen = 3;
+    u_int               m_nuclear_gen_max = 5;
     float               m_nuclear_angle = M_PI / 11;
     int                 m_nuclear_speed = 5;
     bool                m_paused = false;   // whether we update game logic
@@ -45,6 +48,8 @@ class Game
     void sRender();                         // System: Render / Drawing
     void sEnemySpawner();                   // System: Spawns Enemies
     void sCollision();                      // System: Collisions
+    void sSpecialWeaponCooldown();          // System: Special Weapon Cooldown
+
 
     void spawnPlayer();
     void spawnEnemy();

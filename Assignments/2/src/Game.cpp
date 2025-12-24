@@ -51,6 +51,11 @@ void Game::init(const std::string & config)
     m_text.setColor(sf::Color(m_fontConfig.C.R, m_fontConfig.C.G, m_fontConfig.C.B, 255));
     m_text.setPosition(0.0f, 0.0f);
 
+    m_cooldown_text.setFont(m_font);
+    m_cooldown_text.setCharacterSize(m_fontConfig.S);
+    m_cooldown_text.setColor(sf::Color(0,255,0,255));
+    m_cooldown_text.setPosition(m_window.getSize().x * 0.8, 0.0f);
+
     spawnPlayer();  
 }
 
@@ -69,6 +74,7 @@ void Game::run()
         if (!m_paused)
         {
             sEnemySpawner();
+            sSpecialWeaponCooldown();
             sMovement();
             sCollision();
             sLifespan();
@@ -117,7 +123,9 @@ void Game::spawnPlayer()
 
     entity->cCollision = std::make_shared<CCollision>(m_playerConfig.CR);
 
-    entity->cNuclearRadiation = std::make_shared<CNuclearRadiation>(m_nuclear_gen);
+    entity->cNuclearRadiation = std::make_shared<CNuclearRadiation>(0);
+
+    m_nuclear_cooldown = m_currentFrame;
 
     // Since we want this Entity to be our player, set our Game's player variable to be this Entity
     // This goes slightly against the EntityManager paradigm, but we use the player so much it's worth it
@@ -223,7 +231,7 @@ void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity, const Vec2 & targe
         auto tpos   = entity->cTransform->pos.dist(target).normalize();
 
         bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.SR, 
-                                                         tpos * m_nuclear_speed * pow(1.6, (m_nuclear_gen - entity->cNuclearRadiation->m_nuclear_gen_counter)), 
+                                                         tpos * m_nuclear_speed * pow(1.3, (m_nuclear_gen_max - entity->cNuclearRadiation->m_nuclear_gen_counter)), 
                                                          0.0f);
         
         float radius = entity->cShape->circle.getLocalBounds().width;
@@ -436,6 +444,15 @@ void Game::sEnemySpawner()
     }
 }
 
+void Game::sSpecialWeaponCooldown()
+{
+    if (((m_currentFrame - m_nuclear_cooldown) / m_nuclear_cooldown_interval == 1) && m_player->cNuclearRadiation->m_nuclear_gen_counter < m_nuclear_gen_max)
+    {
+        m_player->cNuclearRadiation->m_nuclear_gen_counter++;
+        m_nuclear_cooldown = m_currentFrame;
+    }
+}
+
 void Game::sRender()
 {
     // TODO: change the code below to draw ALL of the entities
@@ -464,7 +481,9 @@ void Game::sRender()
     // draw score
     m_text.setString((std::string) "SCORE " + std::to_string(m_score));
     m_window.draw(m_text);
-    
+
+    m_cooldown_text.setString((std::string) "NUCLEAR POWER " + std::to_string(m_player->cNuclearRadiation->m_nuclear_gen_counter));
+    m_window.draw(m_cooldown_text);    
 
     m_window.display();
 }
