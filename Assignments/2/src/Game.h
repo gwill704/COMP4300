@@ -3,6 +3,10 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
+#include <iostream>
+#include <fstream>
+#include <math.h>
+
 #include  <SFML/Graphics.hpp>
 
 struct Color        { u_short R, G, B;                                                };

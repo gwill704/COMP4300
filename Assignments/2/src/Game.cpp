@@ -1,9 +1,5 @@
 #include "Game.h"
 
-#include <iostream>
-#include <fstream>
-#include <math.h>
-
 Game::Game(const std::string & config)
 {
     init(config);
