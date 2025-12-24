@@ -117,6 +117,8 @@ void Game::spawnPlayer()
 
     entity->cCollision = std::make_shared<CCollision>(m_playerConfig.CR);
 
+    entity->cNuclearRadiation = std::make_shared<CNuclearRadiation>(m_nuclear_gen);
+
     // Since we want this Entity to be our player, set our Game's player variable to be this Entity
     // This goes slightly against the EntityManager paradigm, but we use the player so much it's worth it
     m_player = entity;
@@ -159,8 +161,6 @@ void Game::spawnEnemy()
 
     entity->cScore = std::make_shared<CScore>(100 * ev);
 
-    entity->cSmallEnemies = std::make_shared<CSmallEnemies>(true);
-
     // record when the most recent enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
 }
@@ -175,8 +175,7 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e)
     // - set each small enemy to the same color as the original, half the size
     // - small enemies are worth double points of the original enemy
 
-    if (!e->cSmallEnemies->spawn_smallenemies) return;
-
+    if (e->cLifespan) return;
     float d_angle = 2 * M_PI /(float) e->cShape->circle.getPointCount();
     for (float angle = 0; angle < 2 * M_PI; angle += d_angle)
     {
@@ -186,7 +185,6 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity> e)
                                                   e->cShape->circle.getOutlineColor(), e->cShape->circle.getOutlineThickness());
         se->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR * 0.5);
         se->cLifespan  = std::make_shared<CLifespan>(m_enemyConfig.L);
-        se->cSmallEnemies = std::make_shared<CSmallEnemies>(false);
         se->cScore = std::make_shared<CScore>(e->cScore->score * 2);
     }
 }
@@ -215,9 +213,31 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target)
 }
 
 
-void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
+void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity, const Vec2 & target)
 {
     // TODO: implement your own special weapon
+    if (entity->cNuclearRadiation->m_nuclear_gen_counter != 0)
+    {
+        auto bullet = m_entities.addEntity("bullet");
+        
+        auto tpos   = entity->cTransform->pos.dist(target).normalize();
+
+        bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.SR, 
+                                                         tpos * m_nuclear_speed * pow(1.6, (m_nuclear_gen - entity->cNuclearRadiation->m_nuclear_gen_counter)), 
+                                                         0.0f);
+        
+        float radius = entity->cShape->circle.getLocalBounds().width;
+
+        bullet->cShape     = std::make_shared<CShape>   (radius * 0.35, entity->cNuclearRadiation->m_nuclear_gen_counter + 2,
+                                                        sf::Color(m_bulletConfig.F.R, m_bulletConfig.F.G, m_bulletConfig.F.B), 
+                                                        sf::Color(m_bulletConfig.O.R, m_bulletConfig.O.G, m_bulletConfig.O.B), m_bulletConfig.OT);
+
+        bullet->cCollision = std::make_shared<CCollision>(radius * 0.35);
+
+        bullet->cNuclearRadiation = std::make_shared<CNuclearRadiation>(entity->cNuclearRadiation->m_nuclear_gen_counter);
+
+        if (entity->tag() == "player") entity->cNuclearRadiation->m_nuclear_gen_counter--;
+    }
 }
 
 void Game::sMovement()
@@ -298,20 +318,31 @@ void Game::sCollision()
 
     for (auto e : m_entities.getEntities("enemy"))
     {
+        if (!e->isActive()) continue;
         Vec2 & e_pos = e->cTransform->pos;
         float & e_col = e->cCollision->radius;
 
-        if ((e_pos.x + e_col) > m_window.getSize().x ||
-            (e_pos.x - e_col) < 0.0)
-        {
-            e->cTransform->velocity.x *= -1;
-        }
+        if ((e_pos.x + e_col) > m_window.getSize().x)
+            {
+                e->cTransform->pos.x += m_window.getSize().x - (e_pos.x + e_col);
+                e->cTransform->velocity.x *= -1;
+            }
+            if ((e_pos.x - e_col) < 0.0)
+            {
+                e->cTransform->pos.x -= e_pos.x - e_col;
+                e->cTransform->velocity.x *= -1;
+            }
 
-        if ((e_pos.y + e_col) > m_window.getSize().y ||
-            (e_pos.y - e_col) < 0.0)  
-        {
-            e->cTransform->velocity.y *= -1;
-        }
+            if ((e_pos.y + e_col) > m_window.getSize().y)
+            {
+                e->cTransform->pos.y += m_window.getSize().y - (e_pos.y + e_col);
+                e->cTransform->velocity.y *= -1;
+            }
+            if ((e_pos.y - e_col) < 0.0)
+            {
+                e->cTransform->pos.y -= e_pos.y - e_col; 
+                e->cTransform->velocity.y *= -1;
+            }
 
 
         if (e_pos.dist(player_pos).length2() < (e_col + player_col) * (e_col + player_col))
@@ -324,15 +355,70 @@ void Game::sCollision()
 
         for (auto bullet : m_entities.getEntities("bullet"))
         {
-            Vec2 & bullet_pos = bullet->cTransform->pos;
+            if (!bullet->isActive()) continue;
+
+            Vec2  & bullet_pos = bullet->cTransform->pos;
             float & bullet_col = bullet->cCollision->radius;
 
             if (bullet_pos.dist(e_pos).length2() < (bullet_col + e_col) * (bullet_col + e_col))
             {
-                bullet->destroy();
-                spawnSmallEnemies(e);
-                e->destroy();
-                m_score += e->cScore->score;
+                if (!bullet->cNuclearRadiation)
+                {
+                    spawnSmallEnemies(e);
+                    e->destroy();
+                    m_score += e->cScore->score;
+                    bullet->destroy();
+                } 
+
+                if (bullet->cNuclearRadiation)
+                {
+                    float initial_angle = bullet->cTransform->velocity.getAngle();
+                    Vec2 sb1 (cosf(initial_angle + m_nuclear_angle), -sinf(initial_angle + m_nuclear_angle));
+                    Vec2 sb2 (cosf(initial_angle - m_nuclear_angle), -sinf(initial_angle - m_nuclear_angle));
+
+                    sb1 = bullet->cTransform->pos + sb1;
+                    sb2 = bullet->cTransform->pos + sb2;
+                    
+                    bullet->cNuclearRadiation->m_nuclear_gen_counter--;
+                    spawnSmallEnemies(e);
+                    e->destroy();
+                    spawnSpecialWeapon(bullet, sb1);
+                    spawnSpecialWeapon(bullet, sb2);
+                    bullet->destroy();
+                    m_score += e->cScore->score;
+                } 
+            }
+        }
+    }
+
+    for (auto bullet : m_entities.getEntities("bullet"))
+    {
+        if (!bullet->isActive()) continue;
+        if (bullet->cNuclearRadiation)
+        {
+            Vec2 &  bullet_pos = bullet->cTransform->pos;
+            float & bullet_col = bullet->cCollision->radius;
+
+            if ((bullet_pos.x + bullet_col) > m_window.getSize().x)
+            {
+                bullet->cTransform->pos.x += m_window.getSize().x - (bullet_pos.x + bullet_col);
+                bullet->cTransform->velocity.x *= -1;
+            }
+            if ((bullet_pos.x - bullet_col) < 0.0)
+            {
+                bullet->cTransform->pos.x -= bullet_pos.x - bullet_col;
+                bullet->cTransform->velocity.x *= -1;
+            }
+
+            if ((bullet_pos.y + bullet_col) > m_window.getSize().y)
+            {
+                bullet->cTransform->pos.y += m_window.getSize().y - (bullet_pos.y + bullet_col);
+                bullet->cTransform->velocity.y *= -1;
+            }
+            if ((bullet_pos.y - bullet_col) < 0.0)
+            {
+                bullet->cTransform->pos.y -= bullet_pos.y - bullet_col; 
+                bullet->cTransform->velocity.y *= -1;
             }
         }
     }
@@ -359,12 +445,18 @@ void Game::sRender()
     // draw all the entity's sf::CircleShape   
     for (auto e : m_entities.getEntities())
     {
-        //std::cout << "New entity: " << e->id() << std::endl;
         e->cShape->circle.setPosition(e->cTransform->pos.x, e->cTransform->pos.y);
 
         e->cTransform->angle += 1.0f;
         e->cShape->circle.setRotation(e->cTransform->angle);
         e->cShape->circle.setScale(1 + cosf(e->cTransform->angle * m_waves.w) * m_waves.a, 1 + cosf(e->cTransform->angle * m_waves.w) * m_waves.a);
+
+        if (e->tag() == "bullet" && e->cNuclearRadiation)
+        {
+            e->cShape->circle.setFillColor(sf::Color(0, 
+                                                     abs(cosf(e->cTransform->angle * m_waves.w)) * 255,
+                                                     0, 255));
+        }
 
         m_window.draw(e->cShape->circle);
     }
@@ -448,8 +540,9 @@ void Game::sUserInput()
 
             if (event.mouseButton.button == sf::Mouse::Right)
             {
-                std::cout << "Right Mouse Button Clicked at {" << event.mouseButton.x << ", " << event.mouseButton.y << "}\n";
                 // call spawnSpecialWeapon here
+                Vec2 mouse_pos (event.mouseButton.x, event.mouseButton.y);
+                spawnSpecialWeapon(m_player, mouse_pos);
             }
         }
     }

@@ -67,10 +67,10 @@ public:
     CInput() {}
 };
 
-class CSmallEnemies
+class CNuclearRadiation
 {
 public:
-    bool spawn_smallenemies = false;
-    CSmallEnemies(bool activate) 
-        : spawn_smallenemies(activate) {}
+    u_int m_nuclear_gen_counter;
+    CNuclearRadiation(u_int nuclear_gen)
+        : m_nuclear_gen_counter(nuclear_gen) {}
 };

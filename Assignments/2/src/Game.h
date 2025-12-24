@@ -28,6 +28,9 @@ class Game
     int                 m_currentFrame = 0;
     int                 m_lastEnemySpawnTime = 0;
     Wave                m_waves;
+    u_int               m_nuclear_gen = 3;
+    float               m_nuclear_angle = M_PI / 11;
+    int                 m_nuclear_speed = 5;
     bool                m_paused = false;   // whether we update game logic
     bool                m_running = true;   // whether the game is running
 
@@ -46,8 +49,8 @@ class Game
     void spawnPlayer();
     void spawnEnemy();
     void spawnSmallEnemies(std::shared_ptr<Entity> entity);
-    void spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & mousePos);
-    void spawnSpecialWeapon(std::shared_ptr<Entity> entity);
+    void spawnBullet(std::shared_ptr<Entity> entity, const Vec2 & target);
+    void spawnSpecialWeapon(std::shared_ptr<Entity> entity, const Vec2 & target);
 
 public:
 

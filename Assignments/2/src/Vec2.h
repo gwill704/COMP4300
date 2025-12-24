@@ -27,4 +27,5 @@ public:
     float length () const;
     float length2 () const;
     Vec2  normalize (); 
+    float getAngle();
 };

@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include <iostream>
 
 Entity::Entity(const size_t id, const std::string& tag)
       : m_id(id), m_tag(tag)

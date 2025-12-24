@@ -16,7 +16,6 @@ int main()
     /*
     clock_t starts = clock();
      /////// HERE IS THE TEST
-    
     clock_t ends = clock();
     double time = (double)(ends - starts);
     std::cout << "time = " << time << std::endl;

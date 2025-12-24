@@ -107,3 +107,8 @@ Vec2 Vec2::normalize()
     *this /= this->length();
     return *this;
 }
+
+float Vec2::getAngle()
+{
+    return atan2f(-y, x);
+}
