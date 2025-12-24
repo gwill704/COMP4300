@@ -230,7 +230,7 @@ void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity, const Vec2 & targe
         
         auto tpos   = entity->cTransform->pos.dist(target).normalize();
 
-        bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.SR, 
+        bullet->cTransform = std::make_shared<CTransform>(entity->cTransform->pos + tpos * m_playerConfig.CR * 2, 
                                                          tpos * m_nuclear_speed * pow(1.3, (m_nuclear_gen_max - entity->cNuclearRadiation->m_nuclear_gen_counter)), 
                                                          0.0f);
         
@@ -394,6 +394,26 @@ void Game::sCollision()
                     spawnSpecialWeapon(bullet, sb2);
                     bullet->destroy();
                     m_score += e->cScore->score;
+                } 
+            }
+
+            if (bullet_pos.dist(player_pos).length2() < (bullet_col + player_col) * (bullet_col + player_col))
+            {
+                if (bullet->cNuclearRadiation)
+                {
+                    float initial_angle = bullet->cTransform->velocity.getAngle();
+                    Vec2 sb1 (cosf(initial_angle + m_nuclear_angle), -sinf(initial_angle + m_nuclear_angle));
+                    Vec2 sb2 (cosf(initial_angle - m_nuclear_angle), -sinf(initial_angle - m_nuclear_angle));
+
+                    sb1 = bullet->cTransform->pos + sb1;
+                    sb2 = bullet->cTransform->pos + sb2;
+                    
+                    bullet->cNuclearRadiation->m_nuclear_gen_counter--;
+                    m_player->destroy();
+                    spawnSpecialWeapon(bullet, sb1);
+                    spawnSpecialWeapon(bullet, sb2);
+                    bullet->destroy();
+                    m_score = 0;
                 } 
             }
         }

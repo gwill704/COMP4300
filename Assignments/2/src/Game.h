@@ -29,7 +29,7 @@ class Game
     int                 m_currentFrame = 0;
     int                 m_lastEnemySpawnTime = 0;
     int                 m_nuclear_cooldown = 0;
-    u_int               m_nuclear_cooldown_interval = 60;
+    u_int               m_nuclear_cooldown_interval = 120;
     Wave                m_waves;
     u_int               m_nuclear_gen_max = 5;
     float               m_nuclear_angle = M_PI / 11;
