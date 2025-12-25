@@ -50,9 +50,20 @@ void Game::init(const std::string & config)
     m_cooldown_text.setFont(m_font);
     m_cooldown_text.setCharacterSize(m_fontConfig.S);
     m_cooldown_text.setColor(sf::Color(0,255,0,255));
-    m_cooldown_text.setPosition(m_window.getSize().x * 0.8, 0.0f);
+    m_cooldown_text.setPosition(m_window.getSize().x * 0.6, 0.0f);
 
     spawnPlayer();  
+
+    // Open it from an audio file
+    if (!music.openFromFile("music/sh.ogg"))
+    {
+        std::cerr << "Could not load music file\n";
+        return;
+    }
+    music.setLoop(true);
+    music.setVolume(1);
+    music.play();
+
 }
 
 void Game::run()
@@ -74,6 +85,7 @@ void Game::run()
             sMovement();
             sCollision();
             sLifespan();
+            m_currentFrame++;
         }
 
         sUserInput();
@@ -83,7 +95,6 @@ void Game::run()
 
         // increment the current frame
         // may need to be moved when pause implemented
-        m_currentFrame++;
     }
 }
 

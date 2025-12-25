@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include  <SFML/Graphics.hpp>
+#include  <SFML/Audio.hpp>
 
 struct Color        { u_short R, G, B;                                                };
 struct Wave         { float w, a;                                                      };
@@ -24,6 +25,7 @@ class Game
     sf::Font            m_font;             // the font we will use to draw
     sf::Text            m_text;             // the score text to be drawn to the screen 
     sf::Text            m_cooldown_text;
+    sf::Music           music;
     WindowConfig        m_windowConfig;  
     FontConfig          m_fontConfig;   
     PlayerConfig        m_playerConfig;
@@ -33,7 +35,7 @@ class Game
     int                 m_currentFrame = 0;
     int                 m_lastEnemySpawnTime = 0;
     int                 m_nuclear_cooldown = 0;
-    u_int               m_nuclear_cooldown_interval = 300;
+    u_int               m_nuclear_cooldown_interval = 180;
     Wave                m_waves;
     u_int               m_nuclear_gen_max = 5;
     float               m_nuclear_angle = M_PI / 11;
