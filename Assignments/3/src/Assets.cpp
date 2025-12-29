@@ -31,7 +31,7 @@ void Assets::addTexture(const std::string& textureName, const std::string& path,
     }
 }
 
-void Assets::addAnimation(const std::string& animationName, const std::string& textureName, size_t )
+void Assets::addAnimation(const std::string& animationName, const std::string& textureName, size_t numberFrames, size_t speedFrames)
 {
     m_animationMap[animationName] = Animation(animationName, textureName, )
 }
@@ -50,3 +50,32 @@ void Assets::addFont(const std::string& fontName, const std::string& path)
     }
 }
 
+void Assets::loadFromFile(const std::string& path)
+{
+    std::ifstream file(path);
+    std::string str;
+    while(file.good())
+    {
+        file >> str;
+
+        if (str == "Texture")
+        {
+            std::string name, path;
+            file >> name >> path;
+            addTexture(name, path);
+        }
+        else if (str == "Animation")
+        {
+            std::string name, texture;
+            float frames, speed;
+            file >> name >> texture >> frames >> speed;
+            addAnimation(name, texture, frames, speed);
+        }
+        else if (str == "Font")
+        {
+            std::string name, path;
+            file >> name >> path;
+            addFont(name, path);
+        }
+    }
+}
