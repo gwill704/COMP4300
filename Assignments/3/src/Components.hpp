@@ -61,3 +61,43 @@ public:
         : size(s), halfSize(s.x / 2, s.y / 2) {}
 };
 
+class CAnimation : public Component
+{
+public: 
+    Animation animation;
+    bool repeat = false;
+    CAnimation() = default;
+    CAnimation(const Animation & animation, bool r)
+        :   animation(animation), repeat(r) {}
+};
+
+class CGravity : public Component
+{
+public:
+    float gravity = 0;
+    CGravity() = default;
+    CGravity(float g) : gravity(g) {}
+};
+
+class CState : public Component
+{
+public: 
+    std::string state = "jumping";
+    CState() = default;
+    CState(const std::string & s) : state(s) {}
+};
+
+
+// Avoid error of bookkeeping memory in compile time for compiler not knowing if there's default constructor or not
+static_assert(std::is_default_constructible_v<CTransform>);
+static_assert(std::is_default_constructible_v<CLifespan>);
+static_assert(std::is_default_constructible_v<CInput>);
+static_assert(std::is_default_constructible_v<CBoundingBox>);
+static_assert(std::is_default_constructible_v<CAnimation>);
+static_assert(std::is_default_constructible_v<CGravity>);
+static_assert(std::is_default_constructible_v<CState>);
+
+static_assert(std::is_default_constructible_v<Vec2f>);
+static_assert(std::is_default_constructible_v<Animation>);
+
+
