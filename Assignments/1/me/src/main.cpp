@@ -3,6 +3,9 @@
 #include <memory>
 #include <fstream>
 
+#include <imgui-SFML.h>
+#include <imgui.h>
+
 struct RGB
 {
     u_short red;
@@ -97,11 +100,11 @@ class Config
 public:
     Config() 
     {
-        const std::string& filename = "bin/config.txt";
+        const std::string& filename = std::string(ASSETS_PATH) + "bin/config.txt";
         std::ifstream fin(filename);
         if (!fin.is_open())
         {
-            std::cerr << "ERROR: Default constructor Config() tried to read config.txt, and" 
+            std::cerr << "ERROR: Default constructor Config() tried to read config.txt from " << filename 
                       << " maybe it doesn't exist" << std::endl;
             exit(-1);
         }
@@ -132,7 +135,7 @@ public:
             exit(-1);
         }
         fin >> font_path;
-        if (!m_font.loadFromFile(font_path))
+        if (!m_font.loadFromFile(std::string(ASSETS_PATH) + font_path))
         {
             std::cerr << "ERROR: Could not load font\n";
             exit(-1);
@@ -379,18 +382,20 @@ int main (int argc, char * argv[])
     // top-left of the window is (0,0) and bottom-right is (w,h)
     std::unique_ptr<Config> config = std::make_unique<Config>();
     sf::RenderWindow& window = config->getWindow();
-    
+    ImGui::SFML::Init(window);
     // set up the objects that will be drawn to the screen 
     std::vector<std::shared_ptr<sf::Shape>> shapes = config->getShapes();
     RenderShapes rs(*config);
 
     // main loop - continues for each frame wile window is open
+    sf::Clock deltaClock;
     while (window.isOpen())
     {
         // event handling
         sf::Event event;
         while (window.pollEvent(event))
         {
+            ImGui::SFML::ProcessEvent(event);
             // this event is triggered when a key is processed
             if (event.type == sf::Event::Closed)
             {
@@ -398,9 +403,16 @@ int main (int argc, char * argv[])
             }
         }
 
+        ImGui::SFML::Update(window, deltaClock.restart());
+
+        ImGui::ShowDemoWindow();
+
         // basic rendering function calls 
         window.clear(); // clear the window from anything previously drawn
         rs.draw();
+        ImGui::SFML::Render(window);
         window.display();    // call the window display funtion (double buffer )
     }
+
+    ImGui::SFML::Shutdown();
 }
