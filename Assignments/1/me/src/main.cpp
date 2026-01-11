@@ -19,29 +19,49 @@ struct BOOL2D
     bool y;
 };
 
+
+class ImGui_struct
+{
+public:
+    bool drawCircle = true;
+    bool drawText   = true;
+    float circleScale = 1.0f;
+    std::size_t   circleSegments = 32;
+    sf::Vector2f circleSpeed;
+    // the imgui color {r, g, b} wheel requires floats from 0 and 1
+    // sfml will require instead of uint8_t from 0-255
+    float c[3] = { 0.0f, 0.0f, 0.0f };
+    char displayString[255] = "";
+};
+
+
 class Circle : public sf::CircleShape
 {
-    sf::Vector2f m_speed;
-    std::string m_name;
 public:
+    ImGui_struct m_imgui;
     using sf::CircleShape::CircleShape;
-    Circle(float radius = (0.0F) , const std::string& name = "Circle", const sf::Vector2f& speed = sf::Vector2f(0,0), std::size_t pointCount = 30UL) 
-    : CircleShape(radius, pointCount) {}
+    Circle(float radius = (0.0F) , const char* name = "Circle", const sf::Vector2f& speed = sf::Vector2f(0,0), std::size_t pointCount = 32UL) 
+                :   CircleShape(radius, pointCount)
+    {
+        m_imgui.circleSegments = pointCount;
+        this->setScale(m_imgui.circleScale, m_imgui.circleScale);
+        this->setPointCount(m_imgui.circleSegments);
+    }
     void setSpeed(const sf::Vector2f& speed)
     {
-        m_speed = speed;
+        m_imgui.circleSpeed = speed;
     }
-    void setName(const std::string& name)
+    void setName(const char* name)
     {
-        m_name = name;
+        std::strcpy(m_imgui.displayString, name);
     }
     const sf::Vector2f getSpeed() const 
     {
-        return m_speed;
+        return m_imgui.circleSpeed;
     }
     const std::string getName() const
     {
-        return m_name;
+        return m_imgui.displayString;
     }
     const std::array<sf::Vector2f, 2> getBoundingBox() const
     {
@@ -51,32 +71,39 @@ public:
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
+    ImGui_struct getImGuiPars()
+    {
+        return m_imgui;
+    }
 };
 
 
 class Rectangle : public sf::RectangleShape
 {
-    sf::Vector2f m_speed;
-    std::string m_name;
+    ImGui_struct m_imgui;
 public:
     using sf::RectangleShape::RectangleShape;
-    Rectangle(const sf::Vector2f& size = sf::Vector2f(0, 0), const std::string& name = "Rectangle", const sf::Vector2f& speed = sf::Vector2f(0,0)) 
-    : RectangleShape(size) {}
+    Rectangle(const sf::Vector2f& size = sf::Vector2f(0, 0), const char* name = "Rectangle", const sf::Vector2f& speed = sf::Vector2f(0,0)) 
+    : RectangleShape(size) 
+    {
+        this->setScale(m_imgui.circleScale, m_imgui.circleScale);
+    }
+
     void setSpeed(const sf::Vector2f& speed)
     {
-        m_speed = speed;
+        m_imgui.circleSpeed = speed;
     }
-    void setName(const std::string& name)
+    void setName(const char* name)
     {
-        m_name = name;
+        std::strcpy(m_imgui.displayString, name);
     }
     const sf::Vector2f getSpeed() const 
     {
-        return m_speed;
+        return m_imgui.circleSpeed;
     }
     const std::string getName() const
     {
-        return m_name;
+        return m_imgui.displayString;
     }
     const std::array<sf::Vector2f, 2> getBoundingBox() const
     {
@@ -86,11 +113,14 @@ public:
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
+    const ImGui_struct getImGuiPars() const
+    {
+        return m_imgui;
+    }
 };
 
 class Config
 {
-
     sf::Vector2i m_window_dimensions;
     sf::RenderWindow m_window;
     sf::Text m_text;
@@ -167,7 +197,7 @@ public:
                 circle->setFillColor(sf::Color(shape_color.red, shape_color.green, shape_color.blue));
                 circle->setPosition(shape_initial_position);
                 circle->setSpeed(shape_initial_speed);
-                circle->setName(shape_name);
+                circle->setName(shape_name.c_str());
                 m_shapes.push_back(circle);
                 
             }
@@ -182,7 +212,7 @@ public:
                 rectangle->setFillColor(sf::Color(shape_color.red, shape_color.green, shape_color.blue));
                 rectangle->setPosition(shape_initial_position);
                 rectangle->setSpeed(shape_initial_speed);
-                rectangle->setName(shape_name);
+                rectangle->setName(shape_name.c_str());
                 m_shapes.push_back(rectangle);
             }
             else 
@@ -215,9 +245,6 @@ public:
         return m_window;
     }
 };
-
-
-
 class Collisions
 {
     const sf::Vector2i m_windowSize;
@@ -257,8 +284,6 @@ public:
         }
     }
 };
-
-
 class RenderName
 {
     Config& m_config;
@@ -311,13 +336,25 @@ class Movement
 {
     Config& m_config;
     std::shared_ptr<sf::Shape> m_shape;
+    sf::RenderWindow& window;
 public:
-    Movement(Config& config, std::shared_ptr<sf::Shape> shape) : m_config(config), m_shape(shape) {}
+    Movement(Config& config, std::shared_ptr<sf::Shape> shape) : m_config(config), m_shape(shape),  window(m_config.getWindow())  {}
 
     void Update()
     {
         if (auto circle = std::dynamic_pointer_cast<Circle>(m_shape))
         {
+            // IMGUI Implementation
+            ImGui::Begin("Window title");
+            ImGui::Text("Window text!");
+            ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
+            ImGui::End();
+
+            if (circle->getImGuiPars().drawCircle)
+            {
+                window.draw(*circle);  
+            }
+
             Collisions colision(m_config, circle);
             sf::Vector2f initial_position = circle->getPosition();
             sf::Vector2f speed = circle->getSpeed();
@@ -365,11 +402,7 @@ public:
     {
         sf::RenderWindow& window = m_config.getWindow();
         for (auto shape : m_shapes)
-        {
-            ImGui::Checkbox("HOLA", shape->draw);
-
-            window.draw(*shape);
-            
+        {          
             // update position 
             Movement m(m_config, shape);
             m.Update();
@@ -384,12 +417,24 @@ int main (int argc, char * argv[])
     // top-left of the window is (0,0) and bottom-right is (w,h)
     std::unique_ptr<Config> config = std::make_unique<Config>();
     sf::RenderWindow& window = config->getWindow();
-    ImGui::SFML::Init(window);
+
+    // initialize imgui and create clock for internal timing
+    if (!ImGui::SFML::Init(window))
+    {
+        std::cerr << "ERROR: Could not load the window in ImGui\n";
+        std::exit(-1);
+    }
+
+    sf::Clock deltaClock;
+
+    // scale the imgui ui and text size by 2
+    ImGui::GetStyle().ScaleAllSizes(1.0f);
+    ImGui::GetIO().FontGlobalScale = 1.f;
+
     // set up the objects that will be drawn to the screen 
     std::vector<std::shared_ptr<sf::Shape>> shapes = config->getShapes();
     
     // main loop - continues for each frame wile window is open
-    sf::Clock deltaClock;
     while (window.isOpen())
     {
         // event handling
@@ -410,9 +455,9 @@ int main (int argc, char * argv[])
         // imgui
         ImGui::SFML::Update(window, deltaClock.restart());
         
-        ImGui::ShowDemoWindow();
-
         RenderShapes rs(*config);
+        
+
 
 
         // basic rendering function calls 
