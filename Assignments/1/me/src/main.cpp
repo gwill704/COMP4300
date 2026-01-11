@@ -80,8 +80,8 @@ public:
 
 class Rectangle : public sf::RectangleShape
 {
-    ImGui_struct m_imgui;
 public:
+    ImGui_struct m_imgui;
     using sf::RectangleShape::RectangleShape;
     Rectangle(const sf::Vector2f& size = sf::Vector2f(0, 0), const char* name = "Rectangle", const sf::Vector2f& speed = sf::Vector2f(0,0)) 
     : RectangleShape(size) 
@@ -344,17 +344,6 @@ public:
     {
         if (auto circle = std::dynamic_pointer_cast<Circle>(m_shape))
         {
-            // IMGUI Implementation
-            ImGui::Begin("Window title");
-            ImGui::Text("Window text!");
-            ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
-            ImGui::End();
-
-            if (circle->getImGuiPars().drawCircle)
-            {
-                window.draw(*circle);  
-            }
-
             Collisions colision(m_config, circle);
             sf::Vector2f initial_position = circle->getPosition();
             sf::Vector2f speed = circle->getSpeed();
@@ -401,12 +390,37 @@ public:
     void draw()
     {
         sf::RenderWindow& window = m_config.getWindow();
+
+        ImGui::Begin("Window title");
+        ImGui::Text("Window text!");
+
         for (auto shape : m_shapes)
-        {          
+        {
+            if (auto circle = std::dynamic_pointer_cast<Circle>(shape))
+            {
+                // IMGUI Implementation
+                ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
+
+                if (circle->getImGuiPars().drawCircle)
+                {
+                    window.draw(*circle);  
+                }          
+            }
+            else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(shape))
+            {
+                // IMGUI Implementation
+                ImGui::Checkbox("Draw Rectangle", &rectangle->m_imgui.drawCircle);
+
+                if (rectangle->getImGuiPars().drawCircle)
+                {
+                    window.draw(*rectangle);  
+                }
+            }
             // update position 
             Movement m(m_config, shape);
             m.Update();
         }
+        ImGui::End();
     }
 };
 
