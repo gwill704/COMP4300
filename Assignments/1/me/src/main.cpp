@@ -366,6 +366,8 @@ public:
         sf::RenderWindow& window = m_config.getWindow();
         for (auto shape : m_shapes)
         {
+            ImGui::Checkbox("HOLA", shape->draw);
+
             window.draw(*shape);
             
             // update position 
@@ -385,8 +387,7 @@ int main (int argc, char * argv[])
     ImGui::SFML::Init(window);
     // set up the objects that will be drawn to the screen 
     std::vector<std::shared_ptr<sf::Shape>> shapes = config->getShapes();
-    RenderShapes rs(*config);
-
+    
     // main loop - continues for each frame wile window is open
     sf::Clock deltaClock;
     while (window.isOpen())
@@ -396,16 +397,23 @@ int main (int argc, char * argv[])
         while (window.pollEvent(event))
         {
             ImGui::SFML::ProcessEvent(event);
+            
+            
             // this event is triggered when a key is processed
             if (event.type == sf::Event::Closed)
             {
                 window.close();
             }
         }
-
+        
+        
+        // imgui
         ImGui::SFML::Update(window, deltaClock.restart());
-
+        
         ImGui::ShowDemoWindow();
+
+        RenderShapes rs(*config);
+
 
         // basic rendering function calls 
         window.clear(); // clear the window from anything previously drawn
