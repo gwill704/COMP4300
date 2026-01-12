@@ -427,10 +427,14 @@ class ImGui_implementation
 {
     Config& m_config;
     std::vector<std::string> m_shapes_names;
+    std::vector<std::shared_ptr<sf::Shape>> m_shape;
+    int index = 0;
+
 public:
     ImGui_implementation(Config& config) : m_config(config)
     {
         m_shapes_names = config.getShapesNames();
+        m_shape        = config.getShapes();
     }
 
     void draw()
@@ -442,11 +446,16 @@ public:
         {
             names.push_back(name.c_str());
         }
-        int index = 0;
         ImGui::Combo("combo", &index, names.data(), (int)names.size());
-        //ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
+        if (auto circle = std::dynamic_pointer_cast<Circle>(m_shape[index]))
+        {
+            std::cout << "Name of circle: " << circle->getName() << std::endl;
+        }
+        else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
+        {
+            std::cout << "Name of rect: " << rectangle->getName() << std::endl;
+        }
         ImGui::End();
-        std::cout << " m_shapes_names.size() = " <<  names.size() << std::endl;
     }
 };
 
