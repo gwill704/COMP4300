@@ -71,7 +71,7 @@ public:
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
-    ImGui_struct getImGuiPars()
+    ImGui_struct& getImGuiPars()
     {
         return m_imgui;
     }
@@ -113,7 +113,7 @@ public:
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
-    const ImGui_struct getImGuiPars() const
+    ImGui_struct& getImGuiPars()
     {
         return m_imgui;
     }
@@ -200,7 +200,6 @@ public:
                 circle->setName(shape_name.c_str());
                 m_shapes.push_back(circle);
                 m_shapes_names.push_back(shape_name);
-                std::cout << "Circle: add shape_name " << shape_name << " to m_shapes_names\n";
             }
             else if (instruction == "Rectangle")
             {
@@ -216,7 +215,6 @@ public:
                 rectangle->setName(shape_name.c_str());
                 m_shapes.push_back(rectangle);
                 m_shapes_names.push_back(shape_name);
-                std::cout << "Rectangle: add shape_name " << shape_name << " to m_shapes_names\n";
             }
             else 
             {
@@ -238,7 +236,7 @@ public:
         return m_text;
     }
 
-    std::vector<std::shared_ptr<sf::Shape>> getShapes() const
+    std::vector<std::shared_ptr<sf::Shape>>& getShapes()
     {
         return m_shapes;
     }
@@ -425,17 +423,13 @@ public:
 
 class ImGui_implementation
 {
-    Config& m_config;
-    std::vector<std::string> m_shapes_names;
-    std::vector<std::shared_ptr<sf::Shape>> m_shape;
+    std::vector<std::string>& m_shapes_names;
+    std::vector<std::shared_ptr<sf::Shape>>& m_shape;
     int index = 0;
 
 public:
-    ImGui_implementation(Config& config) : m_config(config)
-    {
-        m_shapes_names = config.getShapesNames();
-        m_shape        = config.getShapes();
-    }
+    ImGui_implementation(Config& config) : m_shape(config.getShapes()), m_shapes_names(config.getShapesNames())
+    {}
 
     void draw()
     {
@@ -446,14 +440,18 @@ public:
         {
             names.push_back(name.c_str());
         }
-        ImGui::Combo("combo", &index, names.data(), (int)names.size());
+        ImGui::Combo("Shape", &index, names.data(), (int)names.size());
         if (auto circle = std::dynamic_pointer_cast<Circle>(m_shape[index]))
         {
-            std::cout << "Name of circle: " << circle->getName() << std::endl;
+            ImGui_struct& pars = circle->getImGuiPars();
+            std::string s = "Draw Shape##" + std::to_string(index);
+            ImGui::Checkbox(s.c_str(), &pars.drawCircle);
         }
         else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
         {
-            std::cout << "Name of rect: " << rectangle->getName() << std::endl;
+            ImGui_struct& pars = rectangle->getImGuiPars();
+            std::string s = "Draw Shape##" + std::to_string(index);
+            ImGui::Checkbox(s.c_str(), &pars.drawCircle);
         }
         ImGui::End();
     }
