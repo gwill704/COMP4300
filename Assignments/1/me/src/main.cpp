@@ -126,7 +126,7 @@ class Config
     sf::Text m_text;
     sf::Font m_font;
     std::vector<std::shared_ptr<sf::Shape>> m_shapes;
-
+    std::vector<std::string> m_shapes_names;
 public:
     Config() 
     {
@@ -199,7 +199,8 @@ public:
                 circle->setSpeed(shape_initial_speed);
                 circle->setName(shape_name.c_str());
                 m_shapes.push_back(circle);
-                
+                m_shapes_names.push_back(shape_name);
+                std::cout << "Circle: add shape_name " << shape_name << " to m_shapes_names\n";
             }
             else if (instruction == "Rectangle")
             {
@@ -214,6 +215,8 @@ public:
                 rectangle->setSpeed(shape_initial_speed);
                 rectangle->setName(shape_name.c_str());
                 m_shapes.push_back(rectangle);
+                m_shapes_names.push_back(shape_name);
+                std::cout << "Rectangle: add shape_name " << shape_name << " to m_shapes_names\n";
             }
             else 
             {
@@ -238,6 +241,11 @@ public:
     std::vector<std::shared_ptr<sf::Shape>> getShapes() const
     {
         return m_shapes;
+    }
+
+    std::vector<std::string>& getShapesNames()
+    {
+        return m_shapes_names;
     }
 
     sf::RenderWindow& getWindow()
@@ -391,27 +399,18 @@ public:
     {
         sf::RenderWindow& window = m_config.getWindow();
 
-        ImGui::Begin("Window title");
-        ImGui::Text("Window text!");
-
         for (auto shape : m_shapes)
         {
             if (auto circle = std::dynamic_pointer_cast<Circle>(shape))
             {
-                // IMGUI Implementation
-                ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
-
-                if (circle->getImGuiPars().drawCircle)
+                if (circle->m_imgui.drawCircle)
                 {
                     window.draw(*circle);  
                 }          
             }
             else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(shape))
             {
-                // IMGUI Implementation
-                ImGui::Checkbox("Draw Rectangle", &rectangle->m_imgui.drawCircle);
-
-                if (rectangle->getImGuiPars().drawCircle)
+                if (rectangle->m_imgui.drawCircle)
                 {
                     window.draw(*rectangle);  
                 }
@@ -420,7 +419,34 @@ public:
             Movement m(m_config, shape);
             m.Update();
         }
+    }
+};
+
+
+class ImGui_implementation
+{
+    Config& m_config;
+    std::vector<std::string> m_shapes_names;
+public:
+    ImGui_implementation(Config& config) : m_config(config)
+    {
+        m_shapes_names = config.getShapesNames();
+    }
+
+    void draw()
+    {
+        ImGui::Begin("Window title");
+        ImGui::Text("Window text!");
+        std::vector<const char*> names;
+        for (auto& name : m_shapes_names)
+        {
+            names.push_back(name.c_str());
+        }
+        int index = 0;
+        ImGui::Combo("combo", &index, names.data(), (int)names.size());
+        //ImGui::Checkbox("Draw Circle", &circle->m_imgui.drawCircle);
         ImGui::End();
+        std::cout << " m_shapes_names.size() = " <<  names.size() << std::endl;
     }
 };
 
@@ -429,8 +455,9 @@ int main (int argc, char * argv[])
 {
     //create a new window of the size w*h pixels
     // top-left of the window is (0,0) and bottom-right is (w,h)
-    std::unique_ptr<Config> config = std::make_unique<Config>();
+    Config* config = new Config();
     sf::RenderWindow& window = config->getWindow();
+    RenderShapes rs(*config);
 
     // initialize imgui and create clock for internal timing
     if (!ImGui::SFML::Init(window))
@@ -442,11 +469,13 @@ int main (int argc, char * argv[])
     sf::Clock deltaClock;
 
     // scale the imgui ui and text size by 2
-    ImGui::GetStyle().ScaleAllSizes(1.0f);
-    ImGui::GetIO().FontGlobalScale = 1.f;
+    ImGui::GetStyle().ScaleAllSizes(2.0f);
+    ImGui::GetIO().FontGlobalScale = 2.f;
+
+    ImGui_implementation im(*config);
 
     // set up the objects that will be drawn to the screen 
-    std::vector<std::shared_ptr<sf::Shape>> shapes = config->getShapes();
+    //std::vector<std::shared_ptr<sf::Shape>> shapes = config->getShapes();
     
     // main loop - continues for each frame wile window is open
     while (window.isOpen())
@@ -464,15 +493,10 @@ int main (int argc, char * argv[])
                 window.close();
             }
         }
-        
-        
+    
         // imgui
         ImGui::SFML::Update(window, deltaClock.restart());
-        
-        RenderShapes rs(*config);
-        
-
-
+        im.draw();
 
         // basic rendering function calls 
         window.clear(); // clear the window from anything previously drawn
