@@ -297,9 +297,9 @@ class RenderName
 public:
     RenderName(Config& config, const std::shared_ptr<Circle> circle) : m_config(config), name(config.getTextStyle()) 
     {
-        sf::Vector2f position = circle->getPosition();
-        position.x += circle->getRadius();
-        position.y += circle->getRadius();
+        sf::Vector2f position = circle->getGlobalBounds().getPosition();
+        position.x += circle->getGlobalBounds().getSize().x/2;
+        position.y += circle->getGlobalBounds().getSize().y/2;
         name.setString(circle->getName());
         sf::FloatRect bounds = name.getLocalBounds();
         sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width/2.f, 
@@ -311,8 +311,8 @@ public:
 
     RenderName(Config& config, const std::shared_ptr<Rectangle> rectangle) : m_config(config), name(config.getTextStyle())
     {
-        sf::Vector2f position = rectangle->getPosition();
-        sf::Vector2f size = rectangle->getSize();
+        sf::Vector2f position = rectangle->getGlobalBounds().getPosition();
+        sf::Vector2f size = rectangle->getGlobalBounds().getSize();
         position.x += size.x/2;
         position.y += size.y/2;
         name.setString(rectangle->getName());
