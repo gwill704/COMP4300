@@ -37,8 +37,8 @@ public:
 
 class Circle : public sf::CircleShape
 {
-public:
     ImGui_struct m_imgui;
+public:
     using sf::CircleShape::CircleShape;
     Circle(float radius = (0.0F) , const char* name = "Circle", const sf::Vector2f& speed = sf::Vector2f(0,0), std::size_t pointCount = 32UL) 
                 :   CircleShape(radius, pointCount)
@@ -67,7 +67,7 @@ public:
     {
         sf::Vector2f up_left, down_right;
         up_left = this->getPosition();
-        down_right = up_left + sf::Vector2f(2 * this->getRadius(), 2 * this->getRadius());
+        down_right = (up_left + sf::Vector2f(2 * this->getRadius(), 2 * this->getRadius())) * this->getScale().x;
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
@@ -80,8 +80,8 @@ public:
 
 class Rectangle : public sf::RectangleShape
 {
-public:
     ImGui_struct m_imgui;
+public:
     using sf::RectangleShape::RectangleShape;
     Rectangle(const sf::Vector2f& size = sf::Vector2f(0, 0), const char* name = "Rectangle", const sf::Vector2f& speed = sf::Vector2f(0,0)) 
     : RectangleShape(size) 
@@ -109,7 +109,7 @@ public:
     {
         sf::Vector2f up_left, down_right;
         up_left = this->getPosition();
-        down_right = up_left + this->getSize();
+        down_right = (up_left + this->getSize()) * this->getScale().x;
         std::array<sf::Vector2f, 2> boundingBox = {up_left, down_right};
         return boundingBox;
     }
@@ -254,21 +254,21 @@ public:
 class Collisions
 {
     const sf::Vector2i m_windowSize;
-    const std::array<sf::Vector2f, 2> m_boundingBox;
+    const sf::FloatRect m_boundingBox;
 public:
     Collisions(const Config& config, std::shared_ptr<Circle> shape) : 
     m_windowSize(config.getWindowSize()),
-    m_boundingBox(shape->getBoundingBox())
+    m_boundingBox(shape->getGlobalBounds())
     {}
 
     Collisions(const Config& config, std::shared_ptr<Rectangle> shape) : 
     m_windowSize(config.getWindowSize()),
-    m_boundingBox(shape->getBoundingBox())
+    m_boundingBox(shape->getGlobalBounds())
     {}
 
     bool shapeIsCollidingX() const
     {
-        if (m_boundingBox[0].x < 0 || m_boundingBox[1].x > m_windowSize.x)
+        if (m_boundingBox.getPosition().x < 0 || m_boundingBox.getPosition().x + m_boundingBox.getSize().x > m_windowSize.x)
         {
             return true;
         }
@@ -280,7 +280,7 @@ public:
 
     bool shapeIsCollidingY() const
     {
-        if (m_boundingBox[0].y < 0 || m_boundingBox[1].y > m_windowSize.y)
+        if (m_boundingBox.getPosition().y < 0 || m_boundingBox.getPosition().y + m_boundingBox.getSize().y > m_windowSize.y)
         {
             return true;
         }
@@ -401,15 +401,17 @@ public:
         {
             if (auto circle = std::dynamic_pointer_cast<Circle>(shape))
             {
-                if (circle->m_imgui.drawCircle)
+                if (circle->getImGuiPars().drawCircle)
                 {
+                    circle->setScale(circle->getImGuiPars().circleScale, circle->getImGuiPars().circleScale);
                     window.draw(*circle);  
                 }          
             }
             else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(shape))
             {
-                if (rectangle->m_imgui.drawCircle)
+                if (rectangle->getImGuiPars().drawCircle)
                 {
+                    rectangle->setScale(rectangle->getImGuiPars().circleScale, rectangle->getImGuiPars().circleScale);
                     window.draw(*rectangle);  
                 }
             }
@@ -444,14 +446,20 @@ public:
         if (auto circle = std::dynamic_pointer_cast<Circle>(m_shape[index]))
         {
             ImGui_struct& pars = circle->getImGuiPars();
-            std::string s = "Draw Shape##" + std::to_string(index);
+            std::string sindex = std::to_string(index);
+            std::string s = "Draw Shape##" + sindex;
             ImGui::Checkbox(s.c_str(), &pars.drawCircle);
+            s = "Scale##" + sindex;
+            ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
         }
         else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
         {
             ImGui_struct& pars = rectangle->getImGuiPars();
+            std::string sindex = std::to_string(index);
             std::string s = "Draw Shape##" + std::to_string(index);
             ImGui::Checkbox(s.c_str(), &pars.drawCircle);
+            s = "Scale##" + sindex;
+            ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
         }
         ImGui::End();
     }
