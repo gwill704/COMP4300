@@ -26,7 +26,7 @@ public:
     bool drawCircle = true;
     bool drawText   = true;
     float circleScale = 1.0f;
-    std::size_t   circleSegments = 32;
+    int   circleSegments = 32;
     float circleSpeed[2] = {0.0f, 0.0f};
     // the imgui color {r, g, b} wheel requires floats from 0 and 1
     // sfml will require instead of uint8_t from 0-255
@@ -416,6 +416,7 @@ public:
                     circle->setFillColor(sf::Color((u_int8_t)(circle->getImGuiPars().c[0] * 255), 
                                                    (u_int8_t)(circle->getImGuiPars().c[1] * 255),
                                                    (u_int8_t)(circle->getImGuiPars().c[2] * 255)));
+                    circle->setPointCount(circle->getImGuiPars().circleSegments);
                     window.draw(*circle);  
                 }          
             }
@@ -466,6 +467,8 @@ public:
             ImGui::Checkbox(s.c_str(), &pars.drawCircle);
             s = "Scale##" + sindex;
             ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
+            s = "Sides##" + sindex;
+            ImGui::SliderInt(s.c_str(), &pars.circleSegments, 3, 32, "%.3i");
             s = "Velocity##" + sindex;
             ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
             s = "Color##" + sindex;
