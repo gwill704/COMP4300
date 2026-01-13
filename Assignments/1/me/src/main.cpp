@@ -195,7 +195,11 @@ public:
                 >> shape_color.red >> shape_color.green >> shape_color.blue
                 >> circ_radius;
 
+
                 std::shared_ptr<Circle> circle = std::make_shared<Circle>(circ_radius);
+                circle->getImGuiPars().c[0] = (float) shape_color.red / 255.0f;
+                circle->getImGuiPars().c[1] = (float) shape_color.green / 255.0f;
+                circle->getImGuiPars().c[2] = (float) shape_color.blue / 255.0f;
                 circle->setFillColor(sf::Color(shape_color.red, shape_color.green, shape_color.blue));
                 circle->setPosition(shape_initial_position);
                 circle->setSpeed(shape_initial_speed);
@@ -211,6 +215,9 @@ public:
                 >> rect_size.x >> rect_size.y;
 
                 std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(rect_size);
+                rectangle->getImGuiPars().c[0] = (float) shape_color.red / 255.0f;
+                rectangle->getImGuiPars().c[1] = (float) shape_color.green / 255.0f;
+                rectangle->getImGuiPars().c[2] = (float) shape_color.blue / 255.0f;
                 rectangle->setFillColor(sf::Color(shape_color.red, shape_color.green, shape_color.blue));
                 rectangle->setPosition(shape_initial_position);
                 rectangle->setSpeed(shape_initial_speed);
@@ -406,6 +413,9 @@ public:
                 if (circle->getImGuiPars().drawCircle)
                 {
                     circle->setScale(circle->getImGuiPars().circleScale, circle->getImGuiPars().circleScale);
+                    circle->setFillColor(sf::Color((u_int8_t)(circle->getImGuiPars().c[0] * 255), 
+                                                   (u_int8_t)(circle->getImGuiPars().c[1] * 255),
+                                                   (u_int8_t)(circle->getImGuiPars().c[2] * 255)));
                     window.draw(*circle);  
                 }          
             }
@@ -414,6 +424,9 @@ public:
                 if (rectangle->getImGuiPars().drawCircle)
                 {
                     rectangle->setScale(rectangle->getImGuiPars().circleScale, rectangle->getImGuiPars().circleScale);
+                    rectangle->setFillColor(sf::Color((u_int8_t)(rectangle->getImGuiPars().c[0] * 255), 
+                                                      (u_int8_t)(rectangle->getImGuiPars().c[1] * 255),
+                                                      (u_int8_t)(rectangle->getImGuiPars().c[2] * 255)));
                     window.draw(*rectangle);  
                 }
             }
@@ -455,6 +468,8 @@ public:
             ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
             s = "Velocity##" + sindex;
             ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
+            s = "Color##" + sindex;
+            ImGui::ColorEdit3(s.c_str(), pars.c);
         }
         else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
         {
@@ -466,6 +481,8 @@ public:
             ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
             s = "Velocity##" + sindex;
             ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
+            s = "Color##" + sindex;
+            ImGui::ColorEdit3(s.c_str(), pars.c);
         }
         ImGui::End();
     }
