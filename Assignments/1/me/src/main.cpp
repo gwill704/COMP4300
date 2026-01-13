@@ -27,7 +27,7 @@ public:
     bool drawText   = true;
     float circleScale = 1.0f;
     std::size_t   circleSegments = 32;
-    sf::Vector2f circleSpeed;
+    float circleSpeed[2] = {0.0f, 0.0f};
     // the imgui color {r, g, b} wheel requires floats from 0 and 1
     // sfml will require instead of uint8_t from 0-255
     float c[3] = { 0.0f, 0.0f, 0.0f };
@@ -49,13 +49,14 @@ public:
     }
     void setSpeed(const sf::Vector2f& speed)
     {
-        m_imgui.circleSpeed = speed;
+        m_imgui.circleSpeed[0] = speed.x;
+        m_imgui.circleSpeed[1] = speed.y;
     }
     void setName(const char* name)
     {
         std::strcpy(m_imgui.displayString, name);
     }
-    const sf::Vector2f getSpeed() const 
+    float * getSpeed()
     {
         return m_imgui.circleSpeed;
     }
@@ -91,13 +92,14 @@ public:
 
     void setSpeed(const sf::Vector2f& speed)
     {
-        m_imgui.circleSpeed = speed;
+        m_imgui.circleSpeed[0] = speed.x;
+        m_imgui.circleSpeed[1] = speed.y;
     }
     void setName(const char* name)
     {
         std::strcpy(m_imgui.displayString, name);
     }
-    const sf::Vector2f getSpeed() const 
+    float * getSpeed()  
     {
         return m_imgui.circleSpeed;
     }
@@ -352,7 +354,7 @@ public:
         {
             Collisions colision(m_config, circle);
             sf::Vector2f initial_position = circle->getPosition();
-            sf::Vector2f speed = circle->getSpeed();
+            sf::Vector2f speed(circle->getSpeed()[0], circle->getSpeed()[1]);
             RenderName rn(m_config, circle);
             rn.draw();
             speed.x = colision.shapeIsCollidingX() ? -speed.x : speed.x;
@@ -365,7 +367,7 @@ public:
         {
             Collisions colision(m_config, rectangle);
             sf::Vector2f initial_position = rectangle->getPosition();
-            sf::Vector2f speed = rectangle->getSpeed();
+            sf::Vector2f speed(rectangle->getSpeed()[0], rectangle->getSpeed()[1]);
             RenderName rn(m_config, rectangle);
             rn.draw();
             speed.x = colision.shapeIsCollidingX() ? -speed.x : speed.x;
@@ -451,6 +453,8 @@ public:
             ImGui::Checkbox(s.c_str(), &pars.drawCircle);
             s = "Scale##" + sindex;
             ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
+            s = "Velocity##" + sindex;
+            ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
         }
         else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
         {
@@ -460,6 +464,8 @@ public:
             ImGui::Checkbox(s.c_str(), &pars.drawCircle);
             s = "Scale##" + sindex;
             ImGui::SliderFloat(s.c_str(), &pars.circleScale, 0.f, 10.f, "%.3f");
+            s = "Velocity##" + sindex;
+            ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
         }
         ImGui::End();
     }
