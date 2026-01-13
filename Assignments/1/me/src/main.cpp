@@ -60,7 +60,7 @@ public:
     {
         return m_imgui.circleSpeed;
     }
-    const std::string getName() const
+    char*  getName()
     {
         return m_imgui.displayString;
     }
@@ -103,7 +103,7 @@ public:
     {
         return m_imgui.circleSpeed;
     }
-    const std::string getName() const
+    char *  getName()
     {
         return m_imgui.displayString;
     }
@@ -470,6 +470,8 @@ public:
             ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
             s = "Color##" + sindex;
             ImGui::ColorEdit3(s.c_str(), pars.c);
+            s = "Name##" + sindex;
+            ImGui::InputText(s.c_str(), pars.displayString, IM_ARRAYSIZE(pars.displayString));
         }
         else if (auto rectangle = std::dynamic_pointer_cast<Rectangle>(m_shape[index]))
         {
@@ -483,6 +485,8 @@ public:
             ImGui::SliderFloat2(s.c_str(), pars.circleSpeed, -10.f, 10.f, "%.3f");
             s = "Color##" + sindex;
             ImGui::ColorEdit3(s.c_str(), pars.c);
+            s = "Name##" + sindex;
+            ImGui::InputText(s.c_str(), pars.displayString, IM_ARRAYSIZE(pars.displayString));
         }
         ImGui::End();
     }
