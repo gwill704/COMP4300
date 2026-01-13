@@ -44,7 +44,7 @@ public:
                 :   CircleShape(radius, pointCount)
     {
         m_imgui.circleSegments = pointCount;
-        this->setScale(m_imgui.circleScale, m_imgui.circleScale);
+        this->setScale({m_imgui.circleScale, m_imgui.circleScale});
         this->setPointCount(m_imgui.circleSegments);
     }
     void setSpeed(const sf::Vector2f& speed)
@@ -87,7 +87,7 @@ public:
     Rectangle(const sf::Vector2f& size = sf::Vector2f(0, 0), const char* name = "Rectangle", const sf::Vector2f& speed = sf::Vector2f(0,0)) 
     : RectangleShape(size) 
     {
-        this->setScale(m_imgui.circleScale, m_imgui.circleScale);
+        this->setScale({m_imgui.circleScale, m_imgui.circleScale});
     }
 
     void setSpeed(const sf::Vector2f& speed)
@@ -123,14 +123,14 @@ public:
 
 class Config
 {
-    sf::Vector2i m_window_dimensions;
+    sf::Vector2u m_window_dimensions;
     sf::RenderWindow m_window;
     sf::Text m_text;
     sf::Font m_font;
     std::vector<std::shared_ptr<sf::Shape>> m_shapes;
     std::vector<std::string> m_shapes_names;
 public:
-    Config() 
+    Config() : m_text(m_font, "")
     {
         const std::string& filename = std::string(ASSETS_PATH) + "bin/config.txt";
         std::ifstream fin(filename);
@@ -151,7 +151,7 @@ public:
             exit(-1);
         }
         fin >> m_window_dimensions.x >> m_window_dimensions.y;
-        m_window.create(sf::VideoMode(m_window_dimensions.x, m_window_dimensions.y), "Shapes!");
+        m_window.create(sf::VideoMode({m_window_dimensions.x, m_window_dimensions.y}), "Shapes!");
         m_window.setFramerateLimit(60);
 
 
@@ -167,7 +167,7 @@ public:
             exit(-1);
         }
         fin >> font_path;
-        if (!m_font.loadFromFile(std::string(ASSETS_PATH) + font_path))
+        if (!m_font.openFromFile(std::string(ASSETS_PATH) + font_path))
         {
             std::cerr << "ERROR: Could not load font\n";
             exit(-1);
@@ -235,7 +235,7 @@ public:
 
     }
 
-    const sf::Vector2i getWindowSize() const
+    const sf::Vector2u getWindowSize() const
     {
         return m_window_dimensions;
     }
@@ -277,7 +277,7 @@ public:
 
     bool shapeIsCollidingX() const
     {
-        if (m_boundingBox.getPosition().x < 0 || m_boundingBox.getPosition().x + m_boundingBox.getSize().x > m_windowSize.x)
+        if (m_boundingBox.position.x < 0 || m_boundingBox.position.x + m_boundingBox.size.x > m_windowSize.x)
         {
             return true;
         }
@@ -289,7 +289,7 @@ public:
 
     bool shapeIsCollidingY() const
     {
-        if (m_boundingBox.getPosition().y < 0 || m_boundingBox.getPosition().y + m_boundingBox.getSize().y > m_windowSize.y)
+        if (m_boundingBox.position.y < 0 || m_boundingBox.position.y + m_boundingBox.size.y > m_windowSize.y)
         {
             return true;
         }
@@ -306,13 +306,13 @@ class RenderName
 public:
     RenderName(Config& config, const std::shared_ptr<Circle> circle) : m_config(config), name(config.getTextStyle()) 
     {
-        sf::Vector2f position = circle->getGlobalBounds().getPosition();
-        position.x += circle->getGlobalBounds().getSize().x/2;
-        position.y += circle->getGlobalBounds().getSize().y/2;
+        sf::Vector2f position = circle->getGlobalBounds().position;
+        position.x += circle->getGlobalBounds().size.x/2;
+        position.y += circle->getGlobalBounds().size.y/2;
         name.setString(circle->getName());
         sf::FloatRect bounds = name.getLocalBounds();
-        sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width/2.f, 
-                                           bounds.top + bounds.height/2.f);
+        sf::Vector2f origin = sf::Vector2f(bounds.position.x + bounds.size.x/2.f, 
+                                           bounds.position.y + bounds.size.y/2.f);
         name.setOrigin(origin);
 
         name.setPosition(position);
@@ -320,14 +320,14 @@ public:
 
     RenderName(Config& config, const std::shared_ptr<Rectangle> rectangle) : m_config(config), name(config.getTextStyle())
     {
-        sf::Vector2f position = rectangle->getGlobalBounds().getPosition();
-        sf::Vector2f size = rectangle->getGlobalBounds().getSize();
+        sf::Vector2f position = rectangle->getGlobalBounds().position;
+        sf::Vector2f size = rectangle->getGlobalBounds().size;
         position.x += size.x/2;
         position.y += size.y/2;
         name.setString(rectangle->getName());
         sf::FloatRect bounds = name.getLocalBounds();
-        sf::Vector2f origin = sf::Vector2f(bounds.left + bounds.width/2.f, 
-                                           bounds.top + bounds.height/2.f);
+        sf::Vector2f origin = sf::Vector2f(bounds.position.x + bounds.size.x/2.f, 
+                                           bounds.position.x + bounds.size.y/2.f);
         name.setOrigin(origin);
 
         name.setPosition(position);
@@ -412,7 +412,7 @@ public:
             {
                 if (circle->getImGuiPars().drawCircle)
                 {
-                    circle->setScale(circle->getImGuiPars().circleScale, circle->getImGuiPars().circleScale);
+                    circle->setScale({circle->getImGuiPars().circleScale, circle->getImGuiPars().circleScale});
                     circle->setFillColor(sf::Color((u_int8_t)(circle->getImGuiPars().c[0] * 255), 
                                                    (u_int8_t)(circle->getImGuiPars().c[1] * 255),
                                                    (u_int8_t)(circle->getImGuiPars().c[2] * 255)));
@@ -423,7 +423,7 @@ public:
             {
                 if (rectangle->getImGuiPars().drawCircle)
                 {
-                    rectangle->setScale(rectangle->getImGuiPars().circleScale, rectangle->getImGuiPars().circleScale);
+                    rectangle->setScale({rectangle->getImGuiPars().circleScale, rectangle->getImGuiPars().circleScale});
                     rectangle->setFillColor(sf::Color((u_int8_t)(rectangle->getImGuiPars().c[0] * 255), 
                                                       (u_int8_t)(rectangle->getImGuiPars().c[1] * 255),
                                                       (u_int8_t)(rectangle->getImGuiPars().c[2] * 255)));
@@ -523,14 +523,12 @@ int main (int argc, char * argv[])
     while (window.isOpen())
     {
         // event handling
-        sf::Event event;
-        while (window.pollEvent(event))
+        while (auto event = window.pollEvent())
         {
-            ImGui::SFML::ProcessEvent(event);
-            
+            ImGui::SFML::ProcessEvent(window, *event);
             
             // this event is triggered when a key is processed
-            if (event.type == sf::Event::Closed)
+            if (event->is<sf::Event::Closed>())
             {
                 window.close();
             }
