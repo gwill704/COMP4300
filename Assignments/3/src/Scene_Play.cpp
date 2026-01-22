@@ -214,8 +214,129 @@ void Scene_Play::sGUI()
                 std::string ss = "START##" + name;
                 std::string se = "END##" + name;
 
-                if 
+                if (ImGui::Button(ss.c_str()))
+                {
+                    doAction(Action(name, "START"));
+                }
+                ImGui::SameLine();
+                if (ImGui::Button(se.c_str()))
+                {
+                    doAction(Action(name, "END"));
+                }
+                ImGui::SameLine();
+                ImGui::Text("%s", name.c_str());
+            }
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Assets"))
+        {
+            if (ImGui::CollapseHeader("Animations", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::Indent();
+                int count = 0;
+                for (const auto& [name, anim] : Assets::Instance().getAnimations())
+                {
+                    count++;
+                    ImGui::ImageButton(name.c_str(), anim.getSprite(), sf::Vector2f(32, 32));
+                    if ((count % 6) != 0 && count != Assets::Instance().getAnimation().size())
+                }
+                ImGui::Unindent();
+            }
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
+}
+
+
+void Scene_Play::sRender()
+{
+    // color the background darker so you know that the game is paused
+    if (!m_paused) { m_game.window().clear(sf::Color(100, 100, 255)); }
+    else { m_game.window().clear(sf::Color(50, 50, 150)); }
+
+    sf::Text gridText(Assets::Instance().getFont("Tech"), "", 12);
+
+    // set the viewport of the window to be centered on the player if it's far enough right 
+    auto & pPos = m_player->get<CTransform>().pos;
+    float windowCenterX = std::max(m_game.window().getSize().x / 2.0f, pPos.x);
+    sf::View view = m_game.window().getView();
+    view.setCenter({ windowCenterX, m_game.window().getSize().y - view.getCenter().y });
+    m_game.window().setView(view);
+
+    // draw all Entity textures / animations
+    if (m_drawTextures)
+    {
+        for (auto e : m_entityManager.getEntities())
+        {
+            auto & transform = e->get<CTransform>();
+
+            if (e->has<CAnimation>())
+            {
+                sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
+                sprite.setRotation(sf::degrees(transform.angle));
+                sprite.setPosition(transform.pos);
+                sprite.setScale(transform.scale);
+
+                m_game.window().draw(sprite);
             }
         }
     }
+
+    // draw all entity collision bounding boxes with a rect shape
+    if (m_drawCollision)
+    {
+        for (auto e : m_entityManager.getEntities())
+        {
+            if (e->has<CBoundingBox>())
+            {
+                auto & box       = e->get<CBoundingBox>();
+                auto & transform = e->get<CTransform>();
+                sf::RectangleShape rect;
+                rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
+                rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+                rect.sePosition(transform.pos);
+                rect.setFillColor(sf::Color(0,0,0,0));
+                rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+                rect.setOutlineThickness(1);
+                m_game.window().draw(rect);
+            }
+        }
+    }
+
+    // draw the grid so that students can easily debug
+    if (m_drawGrid)
+    {
+        float leftX = m_game.window().getView().getCenter().x - width() / 2;
+        float rightX = leftX + width() + m_gridSize.x;
+        float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
+
+        for (float x = nextGridX; x < rightX; x += m_gridSize.x)
+        {
+            drawLine(Vec2f(x, 0), Vec2f(x, height()));
+        }
+
+        for (float y = 0; y < height(); y += m_gridSize.y)
+        {
+            drawLine(Vec2f(leftX, height() - y), Vec2f(rightX, height() - y)):
+
+            for (float x = nextGridX; x < rightX; x += m_gridSize.x)
+            {
+                std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
+                std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
+                gridText.setString("(" + xCell + "," + yCell + ")");
+                gridText.setPosition({ x + 3, height() - y - m_gridSize.y + 2});
+                m_game.window().draw(gridText);
+            }
+        }
+    }
+}
+
+void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
+{
+    sf::Vertex line[] = { { p1, sf::Color::White }, { p2, sf::Color::White }};
+
+    m_game.window().draw(line, 2, sf::PrimitiveTypes::Lines);
 }
