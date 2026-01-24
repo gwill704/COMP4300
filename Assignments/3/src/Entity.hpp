@@ -13,21 +13,45 @@ class Entity
 public:
     Entity() {};
 
-    template<typename T>
-    T& get<T>()
+    template <typename T>
+    T& get()
     {
         return std::get<T>(m_components);
     }
 
-    void add<T>()
+    template <typename T, typename... TArgs>
+    T& add(TArgs&&... mArgs)
     {
-        if 
-        std::tuple_cat(m_components, std::make_tuple)
+        auto & component = get<T>();
+        component = T(std::forward<TArgs>(mArgs)...);
+        component.exists = true;
+        return component;
     }
 
+    template <typename T>
     bool has<T>()
     {
-        if (&this.get<T> == nullptr) { return false }
-        else { return true }
+        return get<T>().exists;
+    }
+
+    template <typename T>
+    void remove()
+    {
+        get<T>() = T();
+    }
+
+    bool isActive() const
+    {
+        return m_active;
+    }
+
+    std::string& tag() const
+    {
+        return m_tag;
+    }
+
+    size_t id() const
+    {
+        return m_id;
     }
 }
