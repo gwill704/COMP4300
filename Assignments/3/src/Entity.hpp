@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Components.hpp"
-#include "memroy"
+#include "memory"
 
 
 class Entity 
@@ -9,7 +9,25 @@ class Entity
     bool                        m_active          ;
     int                         m_id              ;
     std::string                 m_tag             ;
-    std::vector<Component>      m_components      ; 
+    std::tuple<>                m_components      ; 
 public:
-    
+    Entity() {};
+
+    template<typename T>
+    T& get<T>()
+    {
+        return std::get<T>(m_components);
+    }
+
+    void add<T>()
+    {
+        if 
+        std::tuple_cat(m_components, std::make_tuple)
+    }
+
+    bool has<T>()
+    {
+        if (&this.get<T> == nullptr) { return false }
+        else { return true }
+    }
 }

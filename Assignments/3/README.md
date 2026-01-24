@@ -154,4 +154,4 @@ I recommend approaching the assignment in the following order, which will help y
 2. Implement Animation::update() and Animation::hasEnded() at any time, it will not affect the gameplay mechanics whatsoever, just animations
 
 3. Implement Scene_Play::loadLevel()
-    Since rendering 
+    Since rendering is already completed, once you correctly read in the defferent types
