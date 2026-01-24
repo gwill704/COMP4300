@@ -1,17 +1,32 @@
 #pragma once
 
 #include "Components.hpp"
+#include "EntityManager.hpp"
 #include "memory"
+#include <tuple>
 
+class EntityManager;
+
+using ComponentTuple = std::tuple<
+    CTransform, 
+    CShape, 
+    CCollision,
+    CInput, 
+    C......,.....
+>
 
 class Entity 
 {
-    bool                        m_active          ;
-    int                         m_id              ;
-    std::string                 m_tag             ;
-    std::tuple<>                m_components      ; 
+    friend class EntityManager;
+    bool                        m_active = true   ;
+    size_t                      m_id              ;
+    std::string                 m_tag = "default" ;
+    ComponentTuple              m_components      ; 
 public:
     Entity() {};
+
+    Entity(const std::string& tag, const size_t id)
+        : m_tag(tag), m_id(id)  {}
 
     template <typename T>
     T& get()
