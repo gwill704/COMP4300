@@ -12,7 +12,9 @@ class EntityManager
     EntityVec m_toAdd;
     size_t    m_totalEntities = 0;
 public:
+
     EntityManager() {}
+
     std::shared_ptr<Entity> addEntity(std::string& tag)
     {
         auto e = std::make_shared<Entity>(tag, m_totalEntities++);
@@ -37,6 +39,13 @@ public:
         }
     }
 
-    EntityVec& getEntities();
-    EntityVec& getEntities(const std::string& tag);
+    EntityVec& getEntities()
+    {
+        return m_entities;
+    }
+
+    EntityVec& getEntities(const std::string& tag)
+    {
+        return m_entityMap[tag];
+    }
 }

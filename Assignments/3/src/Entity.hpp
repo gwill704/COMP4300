@@ -9,11 +9,13 @@ class EntityManager;
 
 using ComponentTuple = std::tuple<
     CTransform, 
-    CShape, 
-    CCollision,
+    CLifespan,
+    CAnimation, 
+    CBoundingBox,
     CInput, 
-    C......,.....
->
+    CState,
+    CGravity
+>;
 
 class Entity 
 {
