@@ -15,7 +15,7 @@ Assets& Assets::Instance()
     return assets;
 }
 
-void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth =)
+void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth = true)
 {
     m_textureMap[textureName] = sf::Texture();
 
