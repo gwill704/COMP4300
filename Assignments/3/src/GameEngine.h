@@ -22,8 +22,8 @@ class GameEngine
     void update();
     void quit();
     
-    template <typename T>
-    void changeScene();
+    template <typename T, typename TArgs>
+    void changeScene(std:string& sceneName, TArgs&&... args);
 
     Assets& getAssets();
     sf::RenderWindow& window();

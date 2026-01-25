@@ -17,13 +17,28 @@ void GameEngine::quit()
 }
 
 
-template <typename T>
-void changeScene()
+template <typename T, typename... TArgs>
+void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
 {
-    T newScene();
-    m_currentScene = newScene.name();
-    m_scenes[m_currentScene] = std::make_shared<T>();
+    if (m_scenes[sceneName])
+    {
+        m_currentScene = sceneName;
+    }
+    else
+    {
+        m_currentScene = sceneName;
+        m_scenes[m_currentScene] = std::make_shared<T>(std::forward<TArgs>(args));
+    }
+}
 
+Assets& getAssets()
+{
+    return m_assets.Instance();
+}
+
+//sf::RenderWindow& window()
+{
+    return m_window;
 }
 
 {
@@ -37,10 +52,10 @@ void changeScene()
     //void update();
     //void quit();
     
-    template <typename T>
-    void changeScene();
+    //template <typename T, typename... TArgs>
+    //void changeScene(const std::string& sceneName, TArgs&&... args);
 
-    Assets& getAssets();
+    //Assets& getAssets();
     sf::RenderWindow& window();
     void sUserInput();
 
