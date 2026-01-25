@@ -18,18 +18,18 @@ class GameEngine
     const std::string&                                       m_currentScene;
     bool                                                     m_running;
 
-    void init(const std::string& config);
+    void init(const std::string& assetsFile);
     void update();
     void quit();
     
     template <typename T, typename TArgs>
     void changeScene(std:string& sceneName, TArgs&&... args);
 
-    Assets& getAssets();
-    sf::RenderWindow& window();
-    void sUserInput();
+    Assets&             getAssets();
+    sf::RenderWindow&   window();
+    void                sUserInput();
 
 public:
-    GameEngine(const std::string& config);
+    GameEngine(const std::string& assetsFile);
     void run();
 }

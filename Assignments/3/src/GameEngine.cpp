@@ -1,9 +1,20 @@
 #include "GameEngine.h"
 
-void GameEngine::init()
+
+
+GameEngine::GameEngine(const std::string& assetsFile)
+{
+    init(assetsFile); 
+}
+
+
+void GameEngine::init(const std::string& assetsFile)
 {
     m_window.create(sf::VideoMode({1280, 720}), "Assignment 3");
     m_window.setFramerateLimit(60);
+
+    // Read assetsFile
+    getAssets().loadFromFile(assetsFile);
 }
 
 void GameEngine::update()
@@ -31,14 +42,41 @@ void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
     }
 }
 
-Assets& getAssets()
+Assets& GameEngine::getAssets()
 {
     return m_assets.Instance();
 }
 
-//sf::RenderWindow& window()
+sf::RenderWindow& GameEngine::window()
 {
     return m_window;
+}
+
+void GameEngine::sUserInput()
+{
+    while (auto event = m_window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+        {
+            m_window.close();
+        }
+        else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+        {
+            if (keyPressed->scancode == sf::KeyBoard::Scancode::Escape)
+            {
+                window.close();
+            }
+        }
+    }
+}
+
+void GameEngine::run()
+{
+    changeScene<Scene_Play>("Play")
+    while(m_running)
+    {
+        m_scenes[m_currentScene]->loadLevel
+    }
 }
 
 {
@@ -56,7 +94,7 @@ Assets& getAssets()
     //void changeScene(const std::string& sceneName, TArgs&&... args);
 
     //Assets& getAssets();
-    sf::RenderWindow& window();
+    //sf::RenderWindow& window();
     void sUserInput();
 
 public:

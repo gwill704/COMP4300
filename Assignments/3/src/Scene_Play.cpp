@@ -40,7 +40,7 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     return Vec2f(0, 0);
 }
 
-void Scene_Play::loadLevel(const std::string& filename)
+void Scene_Play::loadLevel(const std::string& levelPath)
 {
     // reset the entity mangaer every time we load a level 
     m_entityManager = EntityManager();

@@ -1,5 +1,5 @@
-Texture TexStand images/megaman/stand64.png
-Texture TexRun images/megaman/run64.png
+Texture TexStand images/player/pawn_stand.png
+Texture TexRun images/player/pawn_run.png
 Animation Stand  TexStand     1    0
-Animation Run    TexRun       4    10 
-Font      Mario  fonts/mario.ttf
+Animation Run    TexRun       2    10 
+Font      Menu  fonts/StrangerThings_Regular.ttf
