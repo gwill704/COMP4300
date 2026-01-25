@@ -16,7 +16,6 @@ class Animation
 
 public:
 
-    // line 19
     Animation() = default;
 
     Animation(const std::string& name, const std::string& textureName)
@@ -61,4 +60,4 @@ public:
     {
         return m_textureRect;
     }
-}
+};

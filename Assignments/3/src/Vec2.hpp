@@ -1,113 +1,113 @@
 #include <math.h>
 
-Vec2::Vec2()
+class Vec2f
 {
+public:
+    float x, y;
+    Vec2f(float xin, float yin)
+        : x(xin), y(yin)
+    {
 
-}
+    }
 
-Vec2::Vec2(float xin, float yin)
-    : x(xin), y(yin)
-{
+    Vec2f(float angle)
+        : x(cosf(angle)), y(sinf(angle))
+    {
 
-}
-
-Vec2::Vec2(float angle)
-    : x(cosf(angle)), y(sinf(angle))
-{
-
-}
-
-
-bool Vec2::operator == (const Vec2 & rhs) const
-{
-    return (x == rhs.x) && (y == rhs.y);
-}
+    }
 
 
-bool Vec2::operator != (const Vec2 & rhs) const
-{
-    return (x != rhs.x) || (y != rhs.y);
-}
+    bool operator == (const Vec2f & rhs) const
+    {
+        return (x == rhs.x) && (y == rhs.y);
+    }
 
 
-Vec2 Vec2::operator + (const Vec2 & rhs) const
-{
-    return Vec2(x + rhs.x, y + rhs.y);
-}
+    bool operator != (const Vec2f & rhs) const
+    {
+        return (x != rhs.x) || (y != rhs.y);
+    }
 
 
-Vec2 Vec2::operator - (const Vec2 & rhs) const
-{
-    return Vec2(x - rhs.x, y - rhs.y);
-}
+    Vec2f operator + (const Vec2f & rhs) const
+    {
+        return Vec2f(x + rhs.x, y + rhs.y);
+    }
 
 
-Vec2 Vec2::operator * (float val) const
-{
-    return Vec2(x * val, y * val);
-}
+    Vec2f operator - (const Vec2f & rhs) const
+    {
+        return Vec2f(x - rhs.x, y - rhs.y);
+    }
 
 
-Vec2 Vec2::operator / (float val) const
-{
-    return Vec2(x / val, y / val);
-}
+    Vec2f operator * (float val) const
+    {
+        return Vec2f(x * val, y * val);
+    }
 
 
-void Vec2::operator += (const Vec2 & rhs)
-{
-    x += rhs.x;
-    y += rhs.y;
-}
+    Vec2f operator / (float val) const
+    {
+        return Vec2f(x / val, y / val);
+    }
 
 
-void Vec2::operator -= (const Vec2 & rhs)
-{
-    x -= rhs.x;
-    y -= rhs.y;
-}
+    void operator += (const Vec2f & rhs)
+    {
+        x += rhs.x;
+        y += rhs.y;
+    }
 
 
-void Vec2::operator *= (const float val)
-{
-    x *= val;
-    y *= val;
-}
+    void operator -= (const Vec2f & rhs)
+    {
+        x -= rhs.x;
+        y -= rhs.y;
+    }
 
 
-void Vec2::operator /= (const float val)
-{
-    x /= val;
-    y /= val;
-}
+    void operator *= (const float val)
+    {
+        x *= val;
+        y *= val;
+    }
 
 
-Vec2 Vec2::dist(const Vec2 & rhs) const
-{
-    return (rhs - (*this));
-}
+    void operator /= (const float val)
+    {
+        x /= val;
+        y /= val;
+    }
 
 
-float Vec2::length() const
-{
-    //return pow((this->x * this->x + this->y * this->y), .5); this one is a bit slower
-    return sqrt( x*x + y*y );
-}
-
-float Vec2::length2() const
-{
-    return ( x*x + y*y );
-}
+    Vec2f dist(const Vec2f & rhs) const
+    {
+        return (rhs - (*this));
+    }
 
 
-Vec2 Vec2::normalize()
-{
-    if (this->length() == 0) return *this;
-    *this /= this->length();
-    return *this;
-}
+    float length() const
+    {
+        //return pow((this->x * this->x + this->y * this->y), .5); this one is a bit slower
+        return sqrt( x*x + y*y );
+    }
 
-float Vec2::getAngle()
-{
-    return atan2f(-y, x);
-}
+    float length2() const
+    {
+        return ( x*x + y*y );
+    }
+
+
+    Vec2f normalize()
+    {
+        if (this->length() == 0) return *this;
+        *this /= this->length();
+        return *this;
+    }
+
+    float getAngle()
+    {
+        return atan2f(-y, x);
+    }
+};

@@ -12,7 +12,7 @@ Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
     init(m_levelPath);
 }
 
-void ScenePlay::init(const std::string& levelPath)
+void Scene_Play::init(const std::string& levelPath)
 {
     registerAction(sf::Keyboard::Scancode::P,       "PAUSE");
     registerAction(sf::Keyboard::Scancode::Escape,  "QUIT");

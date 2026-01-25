@@ -24,14 +24,19 @@ class Entity
     size_t                      m_id              ;
     std::string                 m_tag = "default" ;
     ComponentTuple              m_components      ; 
-public:
-    Entity() {};
-
     Entity(const std::string& tag, const size_t id)
-        : m_tag(tag), m_id(id)  {}
+    : m_tag(tag), m_id(id)  {}
+public:
+
 
     template <typename T>
     T& get()
+    {
+        return std::get<T>(m_components);
+    }
+
+    template <typename T>
+    const T& get() const
     {
         return std::get<T>(m_components);
     }
