@@ -4,6 +4,9 @@ class Vec2f
 {
 public:
     float x, y;
+
+    Vec2f() = default;
+
     Vec2f(float xin, float yin)
         : x(xin), y(yin)
     {

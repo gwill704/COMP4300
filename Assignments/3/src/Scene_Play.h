@@ -32,4 +32,4 @@ protected:
     void onEnd();
     void spawnPlayer();
     void spawnBullet(std::shared_ptr<Entity> entity);
-}
+};

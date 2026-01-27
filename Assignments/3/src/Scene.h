@@ -23,4 +23,4 @@ public:
     void simulate(int nSimulations);
     void doAction(const Action& action);
     void registerAction(int inputKey, const std::string& aName);
-}
+};

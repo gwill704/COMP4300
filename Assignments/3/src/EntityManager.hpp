@@ -1,9 +1,10 @@
 #pragma once 
 
 #include "Entity.hpp"
+#include <memory>
 
-typedef EntityVec = std::vector<std::shared_ptr<Entity>>;
-typedef EntityMap = std::map<std::string, EntityVec>;
+typedef std::vector<std::shared_ptr<Entity>> EntityVec;
+typedef std::map<std::string, EntityVec>     EntityMap;
 
 class EntityManager
 {
@@ -13,11 +14,11 @@ class EntityManager
     size_t    m_totalEntities = 0;
 public:
 
-    EntityManager() {}
+    EntityManager()= default;
 
     std::shared_ptr<Entity> addEntity(std::string& tag)
     {
-        auto e = std::make_shared<Entity>(tag, m_totalEntities++);
+        auto e = std::shared_ptr<Entity>(new Entity(tag, m_totalEntities++));
         m_toAdd.push_back(e);
 
         return e;
@@ -39,13 +40,18 @@ public:
         }
     }
 
-    EntityVec& getEntities()
+    const EntityVec& getEntities() const
     {
         return m_entities;
     }
 
-    EntityVec& getEntities(const std::string& tag)
+    const EntityVec& getEntities(const std::string& tag)
     {
         return m_entityMap[tag];
     }
-}
+
+    const EntityMap& getEntityMap()
+    {
+        return m_entityMap;
+    }
+};

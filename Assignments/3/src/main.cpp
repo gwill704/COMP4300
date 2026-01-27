@@ -3,5 +3,5 @@
 
 int main()
 {
-    GameEngine game(ASSETS_PATH)
+    GameEngine game(std::string(ASSETS_PATH));
 }

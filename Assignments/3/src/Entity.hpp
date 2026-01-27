@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Components.hpp"
-#include "EntityManager.hpp"
 #include "memory"
 #include <tuple>
 
@@ -22,8 +21,9 @@ class Entity
     friend class EntityManager;
     bool                        m_active = true   ;
     size_t                      m_id              ;
-    std::string                 m_tag = "default" ;
+    const std::string           m_tag = "default" ;
     ComponentTuple              m_components      ; 
+    Entity() = default;
     Entity(const std::string& tag, const size_t id)
     : m_tag(tag), m_id(id)  {}
 public:
@@ -51,7 +51,7 @@ public:
     }
 
     template <typename T>
-    bool has<T>()
+    bool has()
     {
         return get<T>().exists;
     }
@@ -67,7 +67,7 @@ public:
         return m_active;
     }
 
-    std::string& tag() const
+    const std::string& tag() const
     {
         return m_tag;
     }
@@ -76,4 +76,4 @@ public:
     {
         return m_id;
     }
-}
+};

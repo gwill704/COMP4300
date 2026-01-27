@@ -3,6 +3,7 @@
 #include "Action.hpp"
 #include "Assets.h"
 #include "Scene.h"
+#include "Scene_Play.h"
 #include <SFML/Graphics.hpp>
 
 #include <map>
@@ -12,9 +13,9 @@
 
 class GameEngine
 {
-    std::map<const std::string&, std::shared_ptr<Scene>>     m_scenes;
+    std::map<std::string, std::shared_ptr<Scene>>            m_scenes;
     sf::RenderWindow                                         m_window;
-    Assets                                                   m_assets;
+    Assets&                                                  m_assets;
     const std::string&                                       m_currentScene;
     bool                                                     m_running;
 
@@ -22,8 +23,8 @@ class GameEngine
     void update();
     void quit();
     
-    template <typename T, typename TArgs>
-    void changeScene(std:string& sceneName, TArgs&&... args);
+    template <typename T, typename ...TArgs>
+    void changeScene(const std::string& sceneName, TArgs&&... args);
 
     Assets&             getAssets();
     sf::RenderWindow&   window();
@@ -32,4 +33,4 @@ class GameEngine
 public:
     GameEngine(const std::string& assetsFile);
     void run();
-}
+};

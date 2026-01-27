@@ -31,14 +31,14 @@ void GameEngine::quit()
 template <typename T, typename... TArgs>
 void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
 {
-    if (m_scenes[sceneName])
+    if (m_scenes.find(sceneName) != m_scenes.end())
     {
         m_currentScene = sceneName;
     }
     else
     {
         m_currentScene = sceneName;
-        m_scenes[m_currentScene] = std::make_shared<T>(std::forward<TArgs>(args));
+        m_scenes[m_currentScene] = std::make_shared<T>(std::forward<TArgs>(args)...);
     }
 }
 
@@ -52,7 +52,7 @@ sf::RenderWindow& GameEngine::window()
     return m_window;
 }
 
-void GameEngine::sUserInput()
+void GameEngine::sUserInput() ///// TODODODODODO
 {
     while (auto event = m_window.pollEvent())
     {
@@ -77,27 +77,4 @@ void GameEngine::run()
     {
         m_scenes[m_currentScene]->loadLevel
     }
-}
-
-{
-    std::map<const std::string&, std::shared_ptr<Scene>>     m_scenes;
-    sf::RenderWindow                                         m_window;
-    Assets                                                   m_assets;
-    const std::string&                                       m_currentScene;
-    bool                                                     m_running;
-
-    //void init();
-    //void update();
-    //void quit();
-    
-    //template <typename T, typename... TArgs>
-    //void changeScene(const std::string& sceneName, TArgs&&... args);
-
-    //Assets& getAssets();
-    //sf::RenderWindow& window();
-    void sUserInput();
-
-public:
-    GameEngine(const std::string& config);
-    void run();
 }
