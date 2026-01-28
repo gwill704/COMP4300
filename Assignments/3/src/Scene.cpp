@@ -4,27 +4,18 @@
 
 void Scene::simulate(int nSimulations)
 {
-    // TODO
+    // TODO EVERYTHING
     return;
 }
 
-
-
-
-
-class Scene
+void doAction(const Action& action)
 {
-    GameEngine&                            m_game;
-    EntityManager                          m_entities;
-    int                                    m_frame;
-    std::map<int, const std::string&>      m_actionMap;
-    bool                                   m_paused;
-public:
-    void update() = 0;
-    void sDoAction(const Action& action) = 0;
-    void sRender() = 0;
+    // TODO EVERYTHING
+    return;
+}
 
-    //void simulate(int nSimulations);
-    void doAction(const Action& action);
-    void registerAction(int inputKey, const std::string& aName);
+void registerAction(int inputKey, const std::string& aName)
+{
+    // TODO EVERYTHING
+    return;
 }

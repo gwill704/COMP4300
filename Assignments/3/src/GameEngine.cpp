@@ -3,6 +3,7 @@
 
 
 GameEngine::GameEngine(const std::string& assetsFile)
+    : m_assets(getAssets()), m_currentScene("menu")
 {
     init(assetsFile); 
 }
@@ -64,7 +65,7 @@ void GameEngine::sUserInput() ///// TODODODODODO
         {
             if (keyPressed->scancode == sf::KeyBoard::Scancode::Escape)
             {
-                window.close();
+                window().close();
             }
         }
     }
