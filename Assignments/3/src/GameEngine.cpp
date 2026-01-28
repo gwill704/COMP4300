@@ -3,7 +3,7 @@
 
 
 GameEngine::GameEngine(const std::string& assetsFile)
-    : m_assets(getAssets()), m_currentScene("menu")
+    : m_assets(getAssets())
 {
     init(assetsFile); 
 }
@@ -16,6 +16,9 @@ void GameEngine::init(const std::string& assetsFile)
 
     // Read assetsFile
     getAssets().loadFromFile(assetsFile);
+
+    // Current scene
+    m_currentScene = "menu";
 }
 
 void GameEngine::update()

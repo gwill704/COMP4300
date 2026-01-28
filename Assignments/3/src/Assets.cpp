@@ -15,7 +15,7 @@ Assets& Assets::Instance()
     return assets;
 }
 
-void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth = true)
+void Assets::addTexture(const std::string& textureName, const std::string& path, bool smooth)
 {
     m_textureMap[textureName] = sf::Texture();
 
@@ -33,7 +33,7 @@ void Assets::addTexture(const std::string& textureName, const std::string& path,
 
 void Assets::addAnimation(const std::string& animationName, const std::string& textureName, size_t numberFrames, size_t speedFrames)
 {
-    m_animationMap[animationName] = Animation(animationName, textureName, )
+    m_animationMap[animationName] = Animation(animationName, textureName, numberFrames, speedFrames);
 }
 
 void Assets::addFont(const std::string& fontName, const std::string& path)

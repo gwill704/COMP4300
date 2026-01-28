@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Action.hpp"
 #include "Assets.h"
 #include "Scene.h"
@@ -16,7 +14,7 @@ class GameEngine
     std::map<std::string, std::shared_ptr<Scene>>            m_scenes;
     sf::RenderWindow                                         m_window;
     Assets&                                                  m_assets;
-    const std::string&                                       m_currentScene;
+    std::string                                              m_currentScene;
     bool                                                     m_running;
 
     void init(const std::string& assetsFile);

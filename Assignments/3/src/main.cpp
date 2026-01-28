@@ -3,5 +3,6 @@
 
 int main()
 {
-    GameEngine game(std::string(ASSETS_PATH));
+    std::string file = std::string(ASSETS_PATH);
+    GameEngine game(file);
 }
