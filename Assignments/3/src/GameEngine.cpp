@@ -1,4 +1,6 @@
 #include "GameEngine.h"
+#include "Scene_Menu.h"
+#include "Scene_Play.h"
 
 
 
@@ -18,7 +20,8 @@ void GameEngine::init(const std::string& assetsFile)
     getAssets().loadFromFile(assetsFile);
 
     // Current scene
-    m_currentScene = "menu";
+    std::string currentScene = "play";
+    changeScene<Scene_Play>(this, currentScene);
 }
 
 void GameEngine::update()
@@ -32,8 +35,8 @@ void GameEngine::quit()
 }
 
 
-template <typename T, typename... TArgs>
-void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
+template <typename T>
+void GameEngine::changeScene( GameEngine* game, const std::string& sceneName)
 {
     if (m_scenes.find(sceneName) != m_scenes.end())
     {
@@ -42,7 +45,7 @@ void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
     else
     {
         m_currentScene = sceneName;
-        m_scenes[m_currentScene] = std::make_shared<T>(std::forward<TArgs>(args)...);
+        m_scenes[m_currentScene] = std::make_shared<T>(this, sceneName);
     }
 }
 
@@ -66,7 +69,7 @@ void GameEngine::sUserInput() ///// TODODODODODO
         }
         else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
-            if (keyPressed->scancode == sf::KeyBoard::Scancode::Escape)
+            if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
             {
                 window().close();
             }
@@ -76,9 +79,8 @@ void GameEngine::sUserInput() ///// TODODODODODO
 
 void GameEngine::run()
 {
-    changeScene<Scene_Play>("Play")
     while(m_running)
     {
-        m_scenes[m_currentScene]->loadLevel
+        update();
     }
 }

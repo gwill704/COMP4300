@@ -1,12 +1,12 @@
 #include "Action.hpp"
 #include "Assets.h"
 #include "Scene.h"
-#include "Scene_Play.h"
 #include <SFML/Graphics.hpp>
 
 #include <map>
 #include <string>
 #include <fstream>
+
 
 
 class GameEngine
@@ -21,8 +21,8 @@ class GameEngine
     void update();
     void quit();
     
-    template <typename T, typename ...TArgs>
-    void changeScene(const std::string& sceneName, TArgs&&... args);
+    template <typename T>
+    void changeScene(GameEngine* game, const std::string& sceneName);
 
     Assets&             getAssets();
     sf::RenderWindow&   window();

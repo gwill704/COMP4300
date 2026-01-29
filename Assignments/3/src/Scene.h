@@ -8,6 +8,7 @@ class GameEngine;
 
 class Scene
 {
+protected: 
     GameEngine*                            m_game;
     EntityManager                          m_entities;
     int                                    m_frame;
@@ -15,7 +16,7 @@ class Scene
     bool                                   m_paused;
 public:
     Scene() = default;
-    Scene(GameEngine& game);
+    Scene(GameEngine* game);
 
     virtual void update() = 0;
     virtual void sDoAction(const Action& action) = 0;

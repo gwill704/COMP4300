@@ -1,5 +1,5 @@
 #include "Scene.h"
-
+#include "GameEngine.h"
 
 
 void Scene::simulate(int nSimulations)

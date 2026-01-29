@@ -1,10 +1,11 @@
 #pragma once
 
+
 #include "Scene.h"
-#include "GameEngine.h"
 #include "Assets.h"
 
 #include "EntityManager.hpp"
+
 
 class Scene_Play : public Scene
 {
@@ -15,7 +16,6 @@ class Scene_Play : public Scene
     };
 
 protected:
-
     std::shared_ptr<Entity> m_player;
     std::string             m_levelPath;
     PlayerConfig            m_playerConfig;
@@ -29,7 +29,16 @@ protected:
     void loadLevel(const std::string& levelPath);
 
     void update();
+    void sDoAction(const Action& action);
+    void sRender();
+
+    Vec2f gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
+
     void onEnd();
     void spawnPlayer();
     void spawnBullet(std::shared_ptr<Entity> entity);
+
+public: 
+    Scene_Play(GameEngine* gameEngine, const std::string& levelPath);
+
 };

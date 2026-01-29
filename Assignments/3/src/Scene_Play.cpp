@@ -5,7 +5,7 @@
 #include "Components.hpp"
 #include "Action.hpp"
 
-Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
+Scene_Play::Scene_Play(GameEngine* gameEngine, const std::string& levelPath)
     : Scene(gameEngine)
     , m_levelPath(levelPath)
 {
@@ -18,7 +18,7 @@ void Scene_Play::init(const std::string& levelPath)
     registerAction(sf::Keyboard::Scancode::Escape,  "QUIT");
     registerAction(sf::Keyboard::Scancode::T,       "TOGGLE_TEXTURE");
     registerAction(sf::Keyboard::Scancode::C,       "TOGGLE_COLLISION");
-    registerAction(sf::Keyboard::Scancode::g,       "TOGGLE_GRID");
+    registerAction(sf::Keyboard::Scancode::G,       "TOGGLE_GRID");
 
     // TODO: Register all other gameplay Actions
 
@@ -160,7 +160,7 @@ void Scene_Play::sCollision()
     // TODO: Don't let the player walk off the left side of the map
 }
 
-void Scene_Play::sdoAction(const Action& action)
+void Scene_Play::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
