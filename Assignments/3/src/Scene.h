@@ -10,7 +10,7 @@ class Scene
 {
 protected: 
     GameEngine*                            m_game;
-    EntityManager                          m_entities;
+    EntityManager                          m_entityManager;
     int                                    m_frame;
     std::map<int, const std::string&>      m_actionMap;
     bool                                   m_paused;

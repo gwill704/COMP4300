@@ -16,7 +16,7 @@ public:
 
     EntityManager()= default;
 
-    std::shared_ptr<Entity> addEntity(std::string& tag)
+    std::shared_ptr<Entity> addEntity(const std::string& tag)
     {
         auto e = std::shared_ptr<Entity>(new Entity(tag, m_totalEntities++));
         m_toAdd.push_back(e);

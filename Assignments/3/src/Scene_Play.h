@@ -38,6 +38,13 @@ protected:
     void spawnPlayer();
     void spawnBullet(std::shared_ptr<Entity> entity);
 
+    void sMovement();
+    void sLifespan();
+    void sCollision();
+    void sAnimation();
+    void sGUI();
+    
+
 public: 
     Scene_Play(GameEngine* gameEngine, const std::string& levelPath);
 

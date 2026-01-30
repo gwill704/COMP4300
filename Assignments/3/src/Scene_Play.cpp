@@ -14,7 +14,7 @@ Scene_Play::Scene_Play(GameEngine* gameEngine, const std::string& levelPath)
 
 void Scene_Play::init(const std::string& levelPath)
 {
-    registerAction(sf::Keyboard::Scancode::P,       "PAUSE");
+    registerAction(sf::Keyboard::Scan::P,       "PAUSE");
     registerAction(sf::Keyboard::Scancode::Escape,  "QUIT");
     registerAction(sf::Keyboard::Scancode::T,       "TOGGLE_TEXTURE");
     registerAction(sf::Keyboard::Scancode::C,       "TOGGLE_COLLISION");
