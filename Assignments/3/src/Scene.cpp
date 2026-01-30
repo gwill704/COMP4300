@@ -8,13 +8,13 @@ void Scene::simulate(int nSimulations)
     return;
 }
 
-void doAction(const Action& action)
+void Scene::doAction(const Action& action)
 {
     // TODO EVERYTHING
     return;
 }
 
-void registerAction(int inputKey, const std::string& aName)
+void Scene::registerAction(sf::Keyboard::Scan inputKey, const std::string& aName)
 {
     // TODO EVERYTHING
     return;

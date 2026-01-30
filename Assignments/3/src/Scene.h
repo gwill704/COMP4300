@@ -24,5 +24,5 @@ public:
 
     void simulate(int nSimulations);
     void doAction(const Action& action);
-    void registerAction(int inputKey, const std::string& aName);
+    void registerAction(sf::Keyboard::Scan inputKey, const std::string& aName);
 };
