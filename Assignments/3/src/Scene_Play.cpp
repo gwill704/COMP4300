@@ -165,12 +165,12 @@ void Scene_Play::sDoAction(const Action& action)
     if (action.type() == "START")
     {
         if (action.name() == "TOGGLE_TEXTURE")          { m_drawTextures = !m_drawTextures; }
-        else if (action.name == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
-        else if (action.name == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
-        else if (action.name == "TOGGLE_GRID")          { m_drawGrid = !m_drawGrid; }
-        else if (action.name == "PAUSED")               { setPaused(!m_paused); }
-        else if (action.name == "QUIT")                 { onEnd(); }
-        else if (action.name == "RIGHT")                { m_player->get<CInput>().right = true; }
+        else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
+        else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
+        else if (action.name() == "TOGGLE_GRID")          { m_drawGrid = !m_drawGrid; }
+        else if (action.name() == "PAUSED")               { setPaused(!m_paused); }
+        else if (action.name() == "QUIT")                 { onEnd(); }
+        else if (action.name() == "RIGHT")                { m_player->get<CInput>().right = true; }
     }
     else if (action.type() == "END")
     {
@@ -339,4 +339,9 @@ void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
     sf::Vertex line[] = { { p1, sf::Color::White }, { p2, sf::Color::White }};
 
     m_game.window().draw(line, 2, sf::PrimitiveTypes::Lines);
+}
+
+void Scene_Play::setPaused(bool paused)
+{
+
 }

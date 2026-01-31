@@ -37,6 +37,8 @@ protected:
     void onEnd();
     void spawnPlayer();
     void spawnBullet(std::shared_ptr<Entity> entity);
+    void setPaused(bool paused);
+    void drawLine(const Vec2f& p1, const Vec2f& p2);
 
     void sMovement();
     void sLifespan();

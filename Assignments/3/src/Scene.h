@@ -6,6 +6,9 @@ class GameEngine;
 #include "Action.hpp"
 #include <map>
 
+#include <imgui-SFML.h>
+#include <imgui.h>
+
 class Scene
 {
 protected: 
