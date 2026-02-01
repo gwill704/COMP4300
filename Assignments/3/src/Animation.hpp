@@ -6,7 +6,6 @@
 
 class Animation
 {
-    sf::Sprite  m_sprite;
     size_t      m_frameCount    = 1;        // total number of frames of animation
     size_t      m_currentFrame  = 0;        // the current frame of animation being played
     size_t      m_speed         = 0;        // speed to play this animation
@@ -32,8 +31,7 @@ public:
         , m_textureName(textureName)
     {
         const sf::Texture& t = Assets::Instance().getTexture(textureName);
-        m_textureRect = sf::IntRect( { 0, 0 }, { t.getSize().x / m_frameCount, t.getSize().y } );
-        m_sprite = sf::Sprite(t, m_textureRect);
+        m_textureRect = sf::IntRect( { 0, 0 }, { (int)(t.getSize().x / m_frameCount), (int)t.getSize().y } );
     }
 
     //line 40
@@ -65,6 +63,6 @@ public:
 
     const sf::Sprite& getSprite() const
     {
-        return m_sprite;
+        return sf::Sprite(Assets::Instance().getTexture(m_textureName), m_textureRect);
     }
 };

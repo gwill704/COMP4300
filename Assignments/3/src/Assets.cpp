@@ -1,5 +1,3 @@
-#pragma once 
-
 #include "Assets.h"
 
 #include "Animation.hpp"
