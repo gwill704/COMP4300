@@ -231,7 +231,7 @@ void Scene_Play::sGUI()
 
         if (ImGui::BeginTabItem("Assets"))
         {
-            if (ImGui::CollapseHeader("Animations", ImGuiTreeNodeFlags_DefaultOpen))
+            if (ImGui::CollapsingHeader("Animations", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 ImGui::Indent();
                 int count = 0;
@@ -239,7 +239,7 @@ void Scene_Play::sGUI()
                 {
                     count++;
                     ImGui::ImageButton(name.c_str(), anim.getSprite(), sf::Vector2f(32, 32));
-                    if ((count % 6) != 0 && count != Assets::Instance().getAnimation().size())
+                    //if ((count % 6) != 0 && count != Assets::Instance().getAnimations().size()) SOMETHING HERREEE
                 }
                 ImGui::Unindent();
             }

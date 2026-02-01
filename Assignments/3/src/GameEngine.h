@@ -25,10 +25,10 @@ class GameEngine
     void changeScene(GameEngine* game, const std::string& sceneName);
 
     Assets&             getAssets();
-    sf::RenderWindow&   window();
     void                sUserInput();
-
-public:
+    
+    public:
     GameEngine(const std::string& assetsFile);
     void run();
+    sf::RenderWindow&   window();
 };

@@ -9,13 +9,15 @@ class GameEngine;
 #include <imgui-SFML.h>
 #include <imgui.h>
 
+typedef std::map<int, std::string> ActionMap;
+
 class Scene
 {
 protected: 
-    GameEngine*                            m_game;
+    GameEngine&                            m_game;
     EntityManager                          m_entityManager;
     int                                    m_frame;
-    std::map<int, const std::string&>      m_actionMap;
+    ActionMap                              m_actionMap;
     bool                                   m_paused;
 public:
     Scene() = default;
@@ -28,4 +30,5 @@ public:
     void simulate(int nSimulations);
     void doAction(const Action& action);
     void registerAction(sf::Keyboard::Scan inputKey, const std::string& aName);
+    const ActionMap& getActionMap();
 };
