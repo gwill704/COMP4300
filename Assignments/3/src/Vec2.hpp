@@ -2,7 +2,7 @@
 
 #include <math.h>
 
-class Vec2f
+class Vec2f : public sf::Vector2f
 {
 public:
     float x, y;

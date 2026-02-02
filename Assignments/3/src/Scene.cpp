@@ -2,6 +2,10 @@
 #include "GameEngine.h"
 
 
+Scene::Scene(GameEngine& game) 
+        : m_game(game) {}
+
+
 void Scene::simulate(int nSimulations)
 {
     // TODO EVERYTHING

@@ -42,7 +42,7 @@ void Assets::addFont(const std::string& fontName, const std::string& path)
         std::cerr << "Could not load font file: " << path << std::endl;
         m_fontMap.erase(fontName);
     }
-    else 
+    else
     {
         std::cout << "Loaded Font: " << path << std::endl;
     }
@@ -76,4 +76,34 @@ void Assets::loadFromFile(const std::string& path)
             addFont(name, path);
         }
     }
+}
+
+
+const sf::Texture& Assets::getTexture(const std::string& textureName) const
+{
+    return m_textureMap.at(textureName);
+}
+
+const Animation& Assets::getAnimation(const std::string& animationName) const
+{
+    return m_animationMap.at(animationName);
+}
+
+const sf::Font& Assets::getFont(const std::string& fontName) const
+{
+    return m_fontMap.at(fontName);
+}
+
+const std::map<std::string, sf::Texture>& Assets::getTextures() const
+{
+    return m_textureMap;
+}
+const std::map<std::string, Animation>& Assets::getAnimations() const
+{
+    return m_animationMap;
+}
+
+const std::map<std::string, sf::Font>& Assets::getFonts() const
+{
+    return m_fontMap;
 }

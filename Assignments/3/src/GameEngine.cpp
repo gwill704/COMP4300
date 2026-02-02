@@ -21,7 +21,7 @@ void GameEngine::init(const std::string& assetsFile)
 
     // Current scene
     std::string currentScene = "play";
-    changeScene<Scene_Play>(this, currentScene);
+    changeScene<Scene_Play>(*this, currentScene);
 }
 
 void GameEngine::update()
@@ -36,7 +36,7 @@ void GameEngine::quit()
 
 
 template <typename T>
-void GameEngine::changeScene( GameEngine* game, const std::string& sceneName)
+void GameEngine::changeScene( GameEngine& game, const std::string& sceneName)
 {
     if (m_scenes.find(sceneName) != m_scenes.end())
     {
@@ -45,7 +45,7 @@ void GameEngine::changeScene( GameEngine* game, const std::string& sceneName)
     else
     {
         m_currentScene = sceneName;
-        m_scenes[m_currentScene] = std::make_shared<T>(this, sceneName);
+        m_scenes[m_currentScene] = std::make_shared<T>(*this, sceneName);
     }
 }
 

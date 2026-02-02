@@ -5,7 +5,7 @@
 #include "Components.hpp"
 #include "Action.hpp"
 
-Scene_Play::Scene_Play(GameEngine* gameEngine, const std::string& levelPath)
+Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
     : Scene(gameEngine)
     , m_levelPath(levelPath)
 {
@@ -71,7 +71,8 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     block->add<CAnimation>(Assets::Instance().getAnimation("Block"), true);
     block->add<CTransform>(Vec2f(224, 480));
     // add a bounding box, this will now show up if we press the 'C' key
-    block->add<CBoundingBox>(sf::Vector2f(Assets::Instance().getAnimation("Block").getRect().size));
+    block->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation("Block").getRect().size.x,
+                                   Assets::Instance().getAnimation("Block").getRect().size.y));
 
     auto question = m_entityManager.addEntity("tile");
     question->add<CAnimation>(Assets::Instance().getAnimation("Question"), true);
@@ -277,8 +278,8 @@ void Scene_Play::sRender()
             {
                 sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
                 sprite.setRotation(sf::degrees(transform.angle));
-                sprite.setPosition(transform.pos);
-                sprite.setScale(transform.scale);
+                sprite.setPosition({transform.pos.x, transform.pos.y});
+                sprite.setScale({transform.scale.x, transform.scale.y});
 
                 m_game.window().draw(sprite);
             }
@@ -297,7 +298,7 @@ void Scene_Play::sRender()
                 sf::RectangleShape rect;
                 rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
                 rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
-                rect.sePosition(transform.pos);
+                rect.setPosition( {transform.pos.x, transform.pos.y} );
                 rect.setFillColor(sf::Color(0,0,0,0));
                 rect.setOutlineColor(sf::Color(255, 255, 255, 255));
                 rect.setOutlineThickness(1);
@@ -307,9 +308,10 @@ void Scene_Play::sRender()
     }
 
     // draw the grid so that students can easily debug
+    /*
     if (m_drawGrid)
     {
-        float leftX = m_game.window().getView().getCenter().x - width() / 2;
+        float leftX = m_game.window().getView().getCenter().x - m_game.window().getSize().width() / 2;
         float rightX = leftX + width() + m_gridSize.x;
         float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
 
@@ -332,13 +334,14 @@ void Scene_Play::sRender()
             }
         }
     }
+    */
 }
 
 void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
 {
-    sf::Vertex line[] = { { p1, sf::Color::White }, { p2, sf::Color::White }};
+    sf::Vertex line[] = { { {p1.x, p1.y}, sf::Color::White }, { {p2.x, p2.y}, sf::Color::White }};
 
-    m_game.window().draw(line, 2, sf::PrimitiveTypes::Lines);
+    m_game.window().draw(line, 2, sf::PrimitiveType::Lines);
 }
 
 void Scene_Play::setPaused(bool paused)

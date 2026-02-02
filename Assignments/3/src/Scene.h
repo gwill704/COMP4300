@@ -20,8 +20,8 @@ protected:
     ActionMap                              m_actionMap;
     bool                                   m_paused;
 public:
-    Scene() = default;
-    Scene(GameEngine* game);
+    Scene() = delete;
+    Scene(GameEngine& game);
 
     virtual void update() = 0;
     virtual void sDoAction(const Action& action) = 0;
