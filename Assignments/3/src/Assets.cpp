@@ -89,6 +89,7 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
     else
     {
         std::cerr << "Error: Assets::getTexture: " << textureName << " not found in m_textureMap map\n";
+        exit(-1);
     }
 }
 
@@ -102,6 +103,7 @@ const Animation& Assets::getAnimation(const std::string& animationName) const
     else
     {
         std::cerr << "Error: Assets::getAnimation: " << animationName << " not found in m_animationMap map\n";
+        exit(-1);
     }
 }
 
@@ -115,6 +117,7 @@ const sf::Font& Assets::getFont(const std::string& fontName) const
     else
     {
         std::cerr << "Error: Assets::getFont: " << fontName << " not found in m_fontMap map\n";
+        exit(-1);
     }
 }
 
