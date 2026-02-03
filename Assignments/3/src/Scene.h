@@ -22,6 +22,7 @@ protected:
 public:
     Scene() = delete;
     Scene(GameEngine& game);
+    virtual ~Scene() = default;
 
     virtual void update() = 0;
     virtual void sDoAction(const Action& action) = 0;

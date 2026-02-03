@@ -14,19 +14,37 @@ GameEngine::GameEngine(const std::string& assetsFile)
 void GameEngine::init(const std::string& assetsFile)
 {
     m_window.create(sf::VideoMode({1280, 720}), "Assignment 3");
+    std::cout << "Window created" <<std::endl;
     m_window.setFramerateLimit(60);
+    std::cout << "Window setFramerateLimit done" <<std::endl;
 
     // Read assetsFile
     getAssets().loadFromFile(assetsFile);
+    std::cout << "Assets Loaded" <<std::endl;
+
 
     // Current scene
+    m_running = true;
     std::string currentScene = "play";
-    changeScene<Scene_Play>(*this, currentScene);
+    std::string levelPath = std::string(ASSETS_PATH) + "level1.txt";
+    changeScene<Scene_Play>(currentScene, levelPath);
 }
 
 void GameEngine::update()
 {
-    m_scenes[m_currentScene]->update();
+    std::cout << "GameEngine::update(): Pre-m_scenes[m_currentScene]->update()\n";
+    if (m_scenes[m_currentScene]) std::cout << "update: m_scenes[m_currentScene] exists\n";
+    m_scenes.at(m_currentScene)->update();
+    /*
+    if(m_scenes[m_currentScene])
+    {
+        m_scenes.at(m_currentScene)->update();
+    }
+    else
+    {
+        std::cout << "GameEngine::update(): no " << m_currentScene << "in m_scenes map\n";
+    }
+    */
 }
 
 void GameEngine::quit()
@@ -35,18 +53,11 @@ void GameEngine::quit()
 }
 
 
-template <typename T>
-void GameEngine::changeScene( GameEngine& game, const std::string& sceneName)
+template <typename T, typename... TArgs>
+void GameEngine::changeScene(const std::string& sceneName, TArgs&&... args)
 {
-    if (m_scenes.find(sceneName) != m_scenes.end())
-    {
-        m_currentScene = sceneName;
-    }
-    else
-    {
-        m_currentScene = sceneName;
-        m_scenes[m_currentScene] = std::make_shared<T>(*this, sceneName);
-    }
+    m_currentScene = sceneName;
+    m_scenes.insert(std::make_pair(m_currentScene, std::make_shared<T>(*this, std::forward<TArgs>(args)...)));
 }
 
 Scene& GameEngine::currentScene()
@@ -86,6 +97,8 @@ void GameEngine::run()
 {
     while(m_running)
     {
+        std::cout << "running" << std::endl;
+        std::cout << "GameEngine::run() pre-update()" << std::endl;
         update();
         m_window.display();
     }

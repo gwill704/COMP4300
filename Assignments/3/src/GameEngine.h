@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <memory>
 
 
 
@@ -21,8 +22,8 @@ class GameEngine
     void update();
     void quit();
     
-    template <typename T>
-    void changeScene(GameEngine& game, const std::string& sceneName);
+    template <typename T, typename... TArgs>
+    void changeScene(const std::string& sceneName, TArgs&&... args);
     Scene& currentScene();
 
     Assets&             getAssets();

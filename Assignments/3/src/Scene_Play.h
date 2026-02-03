@@ -28,10 +28,6 @@ protected:
 
     void loadLevel(const std::string& levelPath);
 
-    void update();
-    void sDoAction(const Action& action);
-    void sRender();
-
     Vec2f gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity);
 
     void onEnd();
@@ -50,4 +46,7 @@ protected:
 public: 
     Scene_Play(GameEngine& gameEngine, const std::string& levelPath);
 
+    void update() override ;
+    void sDoAction(const Action& action) override;
+    void sRender() override;
 };
