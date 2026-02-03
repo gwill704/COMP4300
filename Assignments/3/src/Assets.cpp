@@ -81,17 +81,41 @@ void Assets::loadFromFile(const std::string& path)
 
 const sf::Texture& Assets::getTexture(const std::string& textureName) const
 {
-    return m_textureMap.at(textureName);
+    auto it = m_textureMap.find(textureName);
+    if (it != m_textureMap.end())
+    {
+        return m_textureMap.at(textureName);    
+    }
+    else
+    {
+        std::cerr << "Error: Assets::getTexture: " << textureName << " not found in m_textureMap map\n";
+    }
 }
 
 const Animation& Assets::getAnimation(const std::string& animationName) const
 {
-    return m_animationMap.at(animationName);
+    auto it = m_animationMap.find(animationName);
+    if (it != m_animationMap.end())
+    {
+        return m_animationMap.at(animationName);    
+    }
+    else
+    {
+        std::cerr << "Error: Assets::getAnimation: " << animationName << " not found in m_animationMap map\n";
+    }
 }
 
 const sf::Font& Assets::getFont(const std::string& fontName) const
 {
-    return m_fontMap.at(fontName);
+    auto it = m_fontMap.find(fontName);
+    if (it != m_fontMap.end())
+    {
+        return m_fontMap.at(fontName);    
+    }
+    else
+    {
+        std::cerr << "Error: Assets::getFont: " << fontName << " not found in m_fontMap map\n";
+    }
 }
 
 const std::map<std::string, sf::Texture>& Assets::getTextures() const
