@@ -17,7 +17,7 @@ void Assets::addTexture(const std::string& textureName, const std::string& path,
 {
     m_textureMap[textureName] = sf::Texture();
 
-    if (!m_textureMap[textureName].loadFromFile(path))
+    if (!m_textureMap[textureName].loadFromFile(std::string(ASSETS_PATH) + path))
     {
         std::cerr << "Could not load texture file: " << path << std::endl;
         m_textureMap.erase(textureName);
@@ -37,7 +37,7 @@ void Assets::addAnimation(const std::string& animationName, const std::string& t
 void Assets::addFont(const std::string& fontName, const std::string& path)
 {
     m_fontMap[fontName] = sf::Font();
-    if (!m_fontMap[fontName].openFromFile(path))
+    if (!m_fontMap[fontName].openFromFile(std::string(ASSETS_PATH) + path))
     {
         std::cerr << "Could not load font file: " << path << std::endl;
         m_fontMap.erase(fontName);
