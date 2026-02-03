@@ -49,6 +49,11 @@ void GameEngine::changeScene( GameEngine& game, const std::string& sceneName)
     }
 }
 
+Scene& GameEngine::currentScene()
+{
+    return *m_scenes.at(m_currentScene);
+}
+
 Assets& GameEngine::getAssets()
 {
     return m_assets.Instance();
@@ -82,5 +87,6 @@ void GameEngine::run()
     while(m_running)
     {
         update();
+        m_window.display();
     }
 }

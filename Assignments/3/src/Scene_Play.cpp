@@ -258,7 +258,7 @@ void Scene_Play::sRender()
     if (!m_paused) { m_game.window().clear(sf::Color(100, 100, 255)); }
     else { m_game.window().clear(sf::Color(50, 50, 150)); }
 
-    sf::Text gridText(Assets::Instance().getFont("Tech"), "", 12);
+    sf::Text gridText(Assets::Instance().getFont("Menu"), "", 12);
 
     // set the viewport of the window to be centered on the player if it's far enough right 
     auto & pPos = m_player->get<CTransform>().pos;

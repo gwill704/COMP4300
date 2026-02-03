@@ -23,6 +23,7 @@ class GameEngine
     
     template <typename T>
     void changeScene(GameEngine& game, const std::string& sceneName);
+    Scene& currentScene();
 
     Assets&             getAssets();
     void                sUserInput();

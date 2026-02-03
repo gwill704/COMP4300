@@ -6,15 +6,14 @@
 
 class Animation
 {
-    size_t      m_frameCount    = 1;        // total number of frames of animation
-    size_t      m_currentFrame  = 0;        // the current frame of animation being played
-    size_t      m_speed         = 0;        // speed to play this animation
-    std::string m_name          = "none";   // name of hte animation
-    std::string m_textureName   = "none";   // name of the texture to get the frames from 
-    sf::IntRect m_textureRect;              // sub-rectangle to draw
+    size_t              m_frameCount    = 1;        // total number of frames of animation
+    size_t              m_currentFrame  = 0;        // the current frame of animation being played
+    size_t              m_speed         = 0;        // speed to play this animation
+    std::string         m_name          = "none";   // name of hte animation
+    std::string         m_textureName   = "none";   // name of the texture to get the frames from 
+    sf::IntRect         m_textureRect;              // sub-rectangle to draw
 
 public:
-
     Animation() = default;
 
     Animation(const std::string& name, const std::string& textureName)
@@ -30,8 +29,8 @@ public:
         , m_speed(speed)
         , m_textureName(textureName)
     {
-        const sf::Texture& t = Assets::Instance().getTexture(textureName);
-        m_textureRect = sf::IntRect( { 0, 0 }, { (int)(t.getSize().x / m_frameCount), (int)t.getSize().y } );
+        const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
+        m_textureRect = sf::IntRect( { 0, 0 }, { (int)(t.getSize().x / m_frameCount), (int)t.getSize().y } ); 
     }
 
     //line 40
@@ -63,6 +62,7 @@ public:
 
     const sf::Sprite& getSprite() const
     {
-        return sf::Sprite(Assets::Instance().getTexture(m_textureName), m_textureRect);
+        const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
+        return sf::Sprite(t, m_textureRect);
     }
 };
