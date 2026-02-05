@@ -43,6 +43,7 @@ void GameEngine::update()
 void GameEngine::quit()
 {
     m_running = false;
+    m_window.close();
 }
 
 
@@ -74,13 +75,13 @@ void GameEngine::sUserInput() ///// TODODODODODO
     {
         if (event->is<sf::Event::Closed>())
         {
-            m_window.close();
+            quit();
         }
         else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
             if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
             {
-                window().close();
+                quit();
             }
         }
     }
@@ -90,8 +91,8 @@ void GameEngine::run()
 {
     while(m_running)
     {
-        sUserInput();
         update();
         m_window.display();
+        sUserInput();
     }
 }
