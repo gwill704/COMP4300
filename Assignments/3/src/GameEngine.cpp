@@ -13,7 +13,7 @@ GameEngine::GameEngine(const std::string& assetsFile)
 
 void GameEngine::init(const std::string& assetsFile)
 {
-    m_window.create(sf::VideoMode({1280, 720}), "Assignment 3");
+    m_window.create(sf::VideoMode({1280, 920}), "Assignment 3");
     m_window.setFramerateLimit(60);
 
     // Read assetsFile
@@ -90,6 +90,7 @@ void GameEngine::run()
 {
     while(m_running)
     {
+        sUserInput();
         update();
         m_window.display();
     }
