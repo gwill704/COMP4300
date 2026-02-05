@@ -1,5 +1,11 @@
 Texture TexStand images/player/pawn_stand.png
 Texture TexRun images/player/pawn_run.png
+Texture TexBrick images/bricks/brick.png
+Texture TexBlock images/bricks/block.png
+Texture TexQuestion images/bricks/question.jpg
+Animation Brick  TexBrick     1    0
+Animation Block  TexBlock     1    0
+Animation Question  TexQuestion     1    0
 Animation Stand  TexStand     1    0
 Animation Run    TexRun       2    10 
 Font      Menu  fonts/StrangerThings_Regular.ttf
