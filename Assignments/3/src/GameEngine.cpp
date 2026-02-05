@@ -14,13 +14,10 @@ GameEngine::GameEngine(const std::string& assetsFile)
 void GameEngine::init(const std::string& assetsFile)
 {
     m_window.create(sf::VideoMode({1280, 720}), "Assignment 3");
-    std::cout << "Window created" <<std::endl;
     m_window.setFramerateLimit(60);
-    std::cout << "Window setFramerateLimit done" <<std::endl;
 
     // Read assetsFile
     getAssets().loadFromFile(assetsFile);
-    std::cout << "Assets Loaded" <<std::endl;
 
 
     // Current scene
@@ -32,19 +29,15 @@ void GameEngine::init(const std::string& assetsFile)
 
 void GameEngine::update()
 {
-    std::cout << "GameEngine::update(): Pre-m_scenes[m_currentScene]->update()\n";
-    if (m_scenes[m_currentScene]) std::cout << "update: m_scenes[m_currentScene] exists\n";
-    m_scenes.at(m_currentScene)->update();
-    /*
-    if(m_scenes[m_currentScene])
+    if (m_scenes[m_currentScene])
     {
         m_scenes.at(m_currentScene)->update();
     }
-    else
+    else 
     {
-        std::cout << "GameEngine::update(): no " << m_currentScene << "in m_scenes map\n";
+        std::cerr << "ERROR: GameEngine::update(): m_scenes.at[m_currentScene] does not exist for m_currentScene = " << m_currentScene << std::endl;
+        exit(-1);
     }
-    */
 }
 
 void GameEngine::quit()
@@ -97,8 +90,6 @@ void GameEngine::run()
 {
     while(m_running)
     {
-        std::cout << "running" << std::endl;
-        std::cout << "GameEngine::run() pre-update()" << std::endl;
         update();
         m_window.display();
     }

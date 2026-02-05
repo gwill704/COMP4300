@@ -23,6 +23,7 @@ protected:
     bool                    m_drawCollision = false;
     bool                    m_drawGrid      = false;
     const Vec2f             m_gridSize  = { 64, 64 };
+    bool                    m_paused    = false;
 
     void init(const std::string& levelPath);
 

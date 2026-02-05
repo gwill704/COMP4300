@@ -112,12 +112,10 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 {
     // TODO: this should spawn a bullet at the given entity, 
     //       going in the direction the entity is facing 
-    std::cout << "ScenePlay::spawnBullet\n";
 }
 
 void Scene_Play::update()
 {
-    std::cout << "Scene_Play::update(): pre-m_entityManager.update()\n";
     m_entityManager.update();
 
     // TODO: implement pause functionality
@@ -126,7 +124,7 @@ void Scene_Play::update()
     sLifespan();
     sCollision();
     sAnimation();
-    sGUI();
+    //sGUI();
     sRender();
 }
 
@@ -348,5 +346,5 @@ void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
 
 void Scene_Play::setPaused(bool paused)
 {
-
+    m_paused = paused;
 }
