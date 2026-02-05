@@ -124,7 +124,7 @@ void Scene_Play::update()
     sLifespan();
     sCollision();
     sAnimation();
-    //sGUI();
+    sGUI();
     sRender();
 }
 
@@ -205,7 +205,6 @@ void Scene_Play::onEnd()
 void Scene_Play::sGUI()
 {
     ImGui::Begin("Scene Properties");
-
     if (ImGui::BeginTabBar("MyTabBar"))
     {
         if (ImGui::BeginTabItem("Actions"))

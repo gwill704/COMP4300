@@ -17,6 +17,7 @@ class GameEngine
     Assets&                                                  m_assets;
     std::string                                              m_currentScene;
     bool                                                     m_running;
+    sf::Clock                                                m_deltaClock;
 
     void init(const std::string& assetsFile);
     void update();

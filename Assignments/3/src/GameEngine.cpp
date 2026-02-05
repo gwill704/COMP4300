@@ -19,6 +19,17 @@ void GameEngine::init(const std::string& assetsFile)
     // Read assetsFile
     getAssets().loadFromFile(assetsFile);
 
+     // initialize imgui
+    if (!ImGui::SFML::Init(m_window))
+    {
+        std::cerr << "ERROR: Could not load the window in ImGui\n";
+        std::exit(-1);
+    }
+
+    // scale the imgui ui and text size by 2
+    ImGui::GetStyle().ScaleAllSizes(2.0f);
+    ImGui::GetIO().FontGlobalScale = 2.f;
+
 
     // Current scene
     m_running = true;
@@ -29,6 +40,7 @@ void GameEngine::init(const std::string& assetsFile)
 
 void GameEngine::update()
 {
+    ImGui::SFML::Update(m_window, m_deltaClock.restart());
     if (m_scenes[m_currentScene])
     {
         m_scenes.at(m_currentScene)->update();
@@ -38,6 +50,7 @@ void GameEngine::update()
         std::cerr << "ERROR: GameEngine::update(): m_scenes.at[m_currentScene] does not exist for m_currentScene = " << m_currentScene << std::endl;
         exit(-1);
     }
+    ImGui::SFML::Render(m_window);
 }
 
 void GameEngine::quit()
@@ -73,6 +86,7 @@ void GameEngine::sUserInput() ///// TODODODODODO
 {
     while (auto event = m_window.pollEvent())
     {
+        ImGui::SFML::ProcessEvent(m_window, *event);
         if (event->is<sf::Event::Closed>())
         {
             quit();

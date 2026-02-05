@@ -76,6 +76,7 @@ void Assets::loadFromFile(const std::string& path)
             addFont(name, path);
         }
     }
+    file.close();
 }
 
 
