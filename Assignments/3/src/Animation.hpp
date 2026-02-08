@@ -52,6 +52,7 @@ public:
 
     const std::string& getName() const
     {
+        std::cout << "\nAnimation::getName(): textureName: " << m_textureName << std::endl;
         return m_name;
     }
 
@@ -60,9 +61,10 @@ public:
         return m_textureRect;
     }
 
-    const sf::Sprite& getSprite() const
+    sf::Sprite getSprite() const
     {
         const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
-        return sf::Sprite(t, m_textureRect);
+        auto s = sf::Sprite(t, m_textureRect);
+        return s;
     }
 };

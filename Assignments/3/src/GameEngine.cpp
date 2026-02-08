@@ -56,7 +56,6 @@ void GameEngine::update()
 void GameEngine::quit()
 {
     m_running = false;
-    m_window.close();
 }
 
 
@@ -109,4 +108,5 @@ void GameEngine::run()
         m_window.display();
         sUserInput();
     }
+    ImGui::SFML::Shutdown();
 }
