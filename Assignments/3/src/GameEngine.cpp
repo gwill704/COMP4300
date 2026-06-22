@@ -92,10 +92,21 @@ void GameEngine::sUserInput() ///// TODODODODODO
         }
         else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
         {
-            if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
-            {
-                quit();
-            }
+          if (currentScene().getActionMap().find(static_cast<int>(keyPressed->scancode)) == currentScene().getActionMap().end()) continue;
+          else 
+          {
+            Action action(currentScene().getActionMap().at(static_cast<int>(keyPressed->scancode)), "START");
+            currentScene().doAction(action);
+          }
+        }
+        else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
+        {
+          if (currentScene().getActionMap().find(static_cast<int>(keyPressed->scancode)) == currentScene().getActionMap().end()) continue;
+          else  
+          {
+            Action action(currentScene().getActionMap().at(static_cast<int>(keyPressed->scancode)), "END");
+            currentScene().doAction(action);
+          }
         }
     }
 }

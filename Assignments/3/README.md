@@ -154,4 +154,4 @@ I recommend approaching the assignment in the following order, which will help y
 2. Implement Animation::update() and Animation::hasEnded() at any time, it will not affect the gameplay mechanics whatsoever, just animations
 
 3. Implement Scene_Play::loadLevel()
-    Since rendering is already completed, once you correctly read in the defferent types
+    Since rendering is already completed, once you correctly read in the defferent types of entites, add them to the EntityManager and they should automatically be drawn to the screen. Add the correct bounidng bosxes to Tile entites, and no bounding boxes to the Dec entities. Remembres you can toggle debub view of bounding boxes with T and C keys. 

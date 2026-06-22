@@ -20,7 +20,7 @@ void Scene::doAction(const Action& action)
 
 void Scene::registerAction(sf::Keyboard::Scan inputKey, const std::string& aName)
 {
-    // TODO EVERYTHING
+    m_actionMap[static_cast<int>(inputKey)] = aName;
     return;
 }
 
