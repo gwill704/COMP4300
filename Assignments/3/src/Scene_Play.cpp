@@ -165,8 +165,7 @@ void Scene_Play::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
-        if (action.name() == "TOGGLE_TEXTURE")          { m_drawTextures = !m_drawTextures; }
-        else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
+        if      (action.name() == "TOGGLE_TEXTURE")       { m_drawTextures = !m_drawTextures; }
         else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
         else if (action.name() == "TOGGLE_GRID")          { m_drawGrid = !m_drawGrid; }
         else if (action.name() == "PAUSED")               { setPaused(!m_paused); }
@@ -200,6 +199,8 @@ void Scene_Play::onEnd()
 {
     // TODO: When the scene ends, change back to the MENU scene
     //       use m_game.changeScene(correct params);
+    //       Implement when Menu scene is implemented
+    exit(1);
 }
 
 void Scene_Play::sGUI()
@@ -266,44 +267,41 @@ void Scene_Play::sRender()
     view.setCenter({ windowCenterX, m_game.window().getSize().y - view.getCenter().y });
     m_game.window().setView(view);
 
-    // draw all Entity textures / animations
-    if (m_drawTextures)
+    for (auto e : m_entityManager.getEntities())
     {
-        for (auto e : m_entityManager.getEntities())
+      // draw all Entity textures / animations
+      if (m_drawTextures)
+      {
+        auto & transform = e->get<CTransform>();
+
+        if (e->has<CAnimation>())
         {
+            sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
+            sprite.setRotation(sf::degrees(transform.angle));
+            sprite.setPosition({transform.pos.x, transform.pos.y});
+            sprite.setScale({transform.scale.x, transform.scale.y});
+
+            m_game.window().draw(sprite);
+        }
+      }
+
+      // draw all entity collision bounding boxes with a rect shape
+      if (m_drawCollision)
+      {
+        if (e->has<CBoundingBox>())
+        {
+            auto & box       = e->get<CBoundingBox>();
             auto & transform = e->get<CTransform>();
-
-            if (e->has<CAnimation>())
-            {
-                sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
-                sprite.setRotation(sf::degrees(transform.angle));
-                sprite.setPosition({transform.pos.x, transform.pos.y});
-                sprite.setScale({transform.scale.x, transform.scale.y});
-
-                m_game.window().draw(sprite);
-            }
+            sf::RectangleShape rect;
+            rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
+            rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+            rect.setPosition( {transform.pos.x, transform.pos.y} );
+            rect.setFillColor(sf::Color(0,0,0,0));
+            rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+            rect.setOutlineThickness(1);
+            m_game.window().draw(rect);
         }
-    }
-
-    // draw all entity collision bounding boxes with a rect shape
-    if (m_drawCollision)
-    {
-        for (auto e : m_entityManager.getEntities())
-        {
-            if (e->has<CBoundingBox>())
-            {
-                auto & box       = e->get<CBoundingBox>();
-                auto & transform = e->get<CTransform>();
-                sf::RectangleShape rect;
-                rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
-                rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
-                rect.setPosition( {transform.pos.x, transform.pos.y} );
-                rect.setFillColor(sf::Color(0,0,0,0));
-                rect.setOutlineColor(sf::Color(255, 255, 255, 255));
-                rect.setOutlineThickness(1);
-                m_game.window().draw(rect);
-            }
-        }
+      }
     }
 
     // draw the grid so that students can easily debug
