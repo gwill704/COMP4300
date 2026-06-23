@@ -52,7 +52,44 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     // Note: all of the code below is a sample code which shows you how to 
     //       set up and use entities it should be removed
 
+    std::ifstream fin(levelPath);
+    if (!fin.is_open())
+    {
+      std::cerr << "ERROR: Scene_Play: Input file of levelPath '" << levelPath << "' does not exist" << std::endl;
+    }
+
+    std::string instruction;
+    std::string name;
+    int x, y;
+    while (fin >> instruction) 
+    {
+      std::cout << "DEBUG: while (fin >> instruction) instruction = " << instruction << std::endl;
+      if (instruction == "Tile")
+      {
+        auto tile = m_entityManager.addEntity("tile");
+        fin >> name >> x >> y;
+        tile->add<CAnimation>(Assets::Instance().getAnimation(name), true);
+        tile->add<CTransform>(Vec2f(x, y));
+        tile->add<CBoundingBox>(Vec2f(tile->get<CAnimation>().animation.getRect().size.x,
+                                      tile->get<CAnimation>().animation.getRect().size.y));
+      }
+      if (instruction == "Dec")
+      {
+        auto decoration = m_entityManager.addEntity("dec");
+        fin >> name >> x >> y;
+        decoration->add<CAnimation>(Assets::Instance().getAnimation(name), true);
+        decoration->add<CTransform>(Vec2f(x, y));
+      }
+      if (instruction == "Player")
+      {
+
+      }
+    }
+    
+
+
     spawnPlayer();
+/*
 
     // some sample entities
     auto brick = m_entityManager.addEntity("tile");
@@ -89,7 +126,7 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     //
     //       This will REFERENCE the transform with the variable 'transform2' - it is CORRECT 
     //       Now any changes you make to transform2 will be changed inside the entity
-    //       auto& transform2 = entity->get<CTransform>()
+  */  //       auto& transform2 = entity->get<CTransform>()
 }
 
 void Scene_Play::spawnPlayer()
