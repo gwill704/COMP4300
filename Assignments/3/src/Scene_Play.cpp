@@ -101,7 +101,8 @@ void Scene_Play::spawnPlayer()
     // here is a sample player entity which you can use to construct other entities
     m_player->add<CAnimation>(Assets::Instance().getAnimation("Stand"), true);
     m_player->add<CTransform>(Vec2f(224, 352)); 
-    m_player->add<CBoundingBox>(Vec2f(48,48));
+    m_player->add<CBoundingBox>(Vec2f(m_player->get<CAnimation>().animation.getRect().size.x,
+                                      m_player->get<CAnimation>().animation.getRect().size.y));
     m_player->add<CState>("stand");
     m_player->add<CInput>();
 
