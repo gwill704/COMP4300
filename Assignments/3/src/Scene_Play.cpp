@@ -277,7 +277,10 @@ void Scene_Play::sRender()
         if (e->has<CAnimation>())
         {
             sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
+            auto &  animation = e->get<CAnimation>().animation;
             sprite.setRotation(sf::degrees(transform.angle));
+            sprite.setOrigin(sf::Vector2f(animation.getRect().size.x / 2, 
+                                          animation.getRect().size.y / 2));
             sprite.setPosition({transform.pos.x, transform.pos.y});
             sprite.setScale({transform.scale.x, transform.scale.y});
 
