@@ -15,6 +15,7 @@ void Scene::simulate(int nSimulations)
 void Scene::doAction(const Action& action)
 {
     // TODO EVERYTHING
+    sDoAction(action);
     return;
 }
 
