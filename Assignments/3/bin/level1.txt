@@ -1,3 +1,4 @@
 Tile Block 0 0
 Tile Block 200 200
 Dec Question 200 100
+Player 400 400 48, 48, 32, 32, 9.8, Block

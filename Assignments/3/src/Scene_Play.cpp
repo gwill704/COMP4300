@@ -82,7 +82,10 @@ void Scene_Play::loadLevel(const std::string& levelPath)
       }
       if (instruction == "Player")
       {
-
+        fin >> m_playerConfig.X >> m_playerConfig.Y >> m_playerConfig.CX >> m_playerConfig.CY;
+        fin >> m_playerConfig.SPEED >> m_playerConfig.JUMP >> m_playerConfig.MAXSPEED;
+        fin >> m_playerConfig.GRAVITY;
+        fin >> m_playerConfig.WEAPON;
       }
     }
     
@@ -137,10 +140,11 @@ void Scene_Play::spawnPlayer()
 
     // here is a sample player entity which you can use to construct other entities
     m_player->add<CAnimation>(Assets::Instance().getAnimation("Stand"), true);
-    m_player->add<CTransform>(Vec2f(224, 352)); 
-    m_player->add<CBoundingBox>(Vec2f(48,48));
+    m_player->add<CTransform>(Vec2f(m_playerConfig.X, m_playerConfig.Y)); 
+    m_player->add<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY));
     m_player->add<CState>("stand");
     m_player->add<CInput>();
+    m_player->add<CGravity>(m_playerConfig.GRAVITY);
 
     // TODO: be sure to add the remaining components to the player
 }
@@ -345,33 +349,31 @@ void Scene_Play::sRender()
     }
 
     // draw the grid so that students can easily debug
-    /*
     if (m_drawGrid)
     {
-        float leftX = m_game.window().getView().getCenter().x - m_game.window().getSize().width() / 2;
-        float rightX = leftX + width() + m_gridSize.x;
+        float leftX = m_game.window().getView().getCenter().x - m_game.window().getSize().x / 2;
+        float rightX = leftX + m_game.window().getSize().x + m_gridSize.x;
         float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
 
         for (float x = nextGridX; x < rightX; x += m_gridSize.x)
         {
-            drawLine(Vec2f(x, 0), Vec2f(x, height()));
+            drawLine(Vec2f(x, 0), Vec2f(x, m_game.window().getSize().y));
         }
 
-        for (float y = 0; y < height(); y += m_gridSize.y)
+        for (float y = 0; y < m_game.window().getSize().y; y += m_gridSize.y)
         {
-            drawLine(Vec2f(leftX, height() - y), Vec2f(rightX, height() - y)):
+            drawLine(Vec2f(leftX, m_game.window().getSize().y - y), Vec2f(rightX, m_game.window().getSize().y - y));
 
             for (float x = nextGridX; x < rightX; x += m_gridSize.x)
             {
                 std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
                 std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
                 gridText.setString("(" + xCell + "," + yCell + ")");
-                gridText.setPosition({ x + 3, height() - y - m_gridSize.y + 2});
+                gridText.setPosition({ x + 3, m_game.window().getSize().y - y - m_gridSize.y + 2});
                 m_game.window().draw(gridText);
             }
         }
     }
-    */
 }
 
 void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
