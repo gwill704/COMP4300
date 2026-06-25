@@ -36,8 +36,10 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     //
     //        Remember that SFML has (0,0) int hte top left, while grid coordinates are specified in the bottom left.
     //        You cna get the size of the sfml window via m_game.window()..getSize();
+    Vec2f actualPosition( gridX * m_gridSize.x - entity->get<CAnimation>().animation.getRect().size.x / 2,
+                          m_game.window().getSize().y - (gridY * m_gridSize.y - entity->get<CAnimation>().animation.getRect().size.y / 2));
 
-    return Vec2f(0, 0);
+    return actualPosition;
 }
 
 void Scene_Play::loadLevel(const std::string& levelPath)
@@ -88,6 +90,14 @@ void Scene_Play::loadLevel(const std::string& levelPath)
       }
     }
     
+
+    auto block = m_entityManager.addEntity("tile");
+    block->add<CAnimation>(Assets::Instance().getAnimation("Block"), true);
+    block->add<CTransform>(gridToMidPixel(1,1, block));
+    // add a bounding box, this will now show up if we press the 'C' key
+    block->add<CBoundingBox>(Vec2f(block->get<CAnimation>().animation.getRect().size.x,
+                                   block->get<CAnimation>().animation.getRect().size.y));
+
 
 
     spawnPlayer();
