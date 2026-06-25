@@ -96,7 +96,7 @@ void GameEngine::sUserInput() ///// TODODODODODO
           else 
           {
             Action action(currentScene().getActionMap().at(static_cast<int>(keyPressed->scancode)), "START");
-            currentScene().sDoAction(action);
+            currentScene().doAction(action);
           }
         }
           if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())

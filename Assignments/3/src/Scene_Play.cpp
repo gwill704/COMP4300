@@ -14,7 +14,7 @@ Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
 
 void Scene_Play::init(const std::string& levelPath)
 {
-    registerAction(sf::Keyboard::Scan::P,       "PAUSE");
+    registerAction(sf::Keyboard::Scancode::P,       "PAUSE");
     registerAction(sf::Keyboard::Scancode::Escape,  "QUIT");
     registerAction(sf::Keyboard::Scancode::T,       "TOGGLE_TEXTURE");
     registerAction(sf::Keyboard::Scancode::C,       "TOGGLE_COLLISION");
@@ -63,15 +63,14 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     int x, y;
     while (fin >> instruction) 
     {
-      std::cout << "DEBUG: while (fin >> instruction) instruction = " << instruction << std::endl;
       if (instruction == "Tile")
       {
         auto tile = m_entityManager.addEntity("tile");
         fin >> name >> x >> y;
         tile->add<CAnimation>(Assets::Instance().getAnimation(name), true);
         tile->add<CTransform>(Vec2f(x, y));
-        tile->add<CBoundingBox>(Vec2f(tile->get<CAnimation>().animation.getRect().size.x,
-                                      tile->get<CAnimation>().animation.getRect().size.y));
+        tile->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation(name).getRect().size.x,
+                                      Assets::Instance().getAnimation(name).getRect().size.y));
       }
       if (instruction == "Dec")
       {
@@ -310,11 +309,28 @@ void Scene_Play::sRender()
 
     for (auto e : m_entityManager.getEntities())
     {
+      auto & transform = e->get<CTransform>();
+      // draw all entity collision bounding boxes with a rect shape
+      if (m_drawCollision)
+      {
+       if (e->has<CBoundingBox>())
+       {
+            auto & box       = e->get<CBoundingBox>();
+            sf::RectangleShape rect;
+            rect.setSize(sf::Vector2f(box.size.x + 1, box.size.y + 1));
+            rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+            rect.setPosition( {transform.pos.x, transform.pos.y} );
+            rect.setFillColor(sf::Color(0,0,0,0));
+            rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+            rect.setOutlineThickness(1);
+            m_game.window().draw(rect);
+            
+        }
+      }
+
       // draw all Entity textures / animations
       if (m_drawTextures)
-      {
-        auto & transform = e->get<CTransform>();
-
+      { 
         if (e->has<CAnimation>())
         {
             sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
@@ -324,28 +340,10 @@ void Scene_Play::sRender()
                                           animation.getRect().size.y / 2));
             sprite.setPosition({transform.pos.x, transform.pos.y});
             sprite.setScale({transform.scale.x, transform.scale.y});
-
             m_game.window().draw(sprite);
         }
       }
 
-      // draw all entity collision bounding boxes with a rect shape
-      if (m_drawCollision)
-      {
-        if (e->has<CBoundingBox>())
-        {
-            auto & box       = e->get<CBoundingBox>();
-            auto & transform = e->get<CTransform>();
-            sf::RectangleShape rect;
-            rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
-            rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
-            rect.setPosition( {transform.pos.x, transform.pos.y} );
-            rect.setFillColor(sf::Color(0,0,0,0));
-            rect.setOutlineColor(sf::Color(255, 255, 255, 255));
-            rect.setOutlineThickness(1);
-            m_game.window().draw(rect);
-        }
-      }
     }
 
     // draw the grid so that students can easily debug
@@ -379,7 +377,6 @@ void Scene_Play::sRender()
 void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
 {
     sf::Vertex line[] = { { {p1.x, p1.y}, sf::Color::White }, { {p2.x, p2.y}, sf::Color::White }};
-
     m_game.window().draw(line, 2, sf::PrimitiveType::Lines);
 }
 

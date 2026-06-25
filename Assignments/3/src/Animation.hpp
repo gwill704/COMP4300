@@ -52,7 +52,6 @@ public:
 
     const std::string& getName() const
     {
-        std::cout << "\nAnimation::getName(): textureName: " << m_textureName << std::endl;
         return m_name;
     }
 
