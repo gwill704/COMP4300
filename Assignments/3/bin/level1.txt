@@ -1,4 +1,13 @@
-Tile Block 0 0
-Tile Block 200 200
-Dec Question 200 100
-Player 400 400 48, 48, 32, 32, 9.8, Block
+Dec Question 5 5
+Tile Brick 0 0
+Tile Block 1 0
+Tile Block 2 0
+Tile Block 3 0
+Tile Block 4 0
+Tile Block 5 0
+Tile Block 6 0
+Tile Block 7 0
+Tile Block 8 0
+Tile Block 9 0
+Tile Block 10 0
+Player 4 4 48 48 32 32 9.8 Block

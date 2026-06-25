@@ -36,8 +36,8 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     //
     //        Remember that SFML has (0,0) int hte top left, while grid coordinates are specified in the bottom left.
     //        You cna get the size of the sfml window via m_game.window()..getSize();
-    Vec2f actualPosition( gridX * m_gridSize.x - entity->get<CAnimation>().animation.getSize().x / 2,
-                          m_game.window().getSize().y - (gridY * m_gridSize.y - entity->get<CAnimation>().animation.getSize().y / 2));
+    Vec2f actualPosition( gridX * m_gridSize.x + entity->get<CAnimation>().animation.getSize().x / 2,
+                          m_game.window().getSize().y - (gridY * m_gridSize.y + entity->get<CAnimation>().animation.getSize().y / 2));
 
     return actualPosition;
 }
@@ -70,7 +70,7 @@ void Scene_Play::loadLevel(const std::string& levelPath)
         auto tile = m_entityManager.addEntity("tile");
         fin >> name >> x >> y;
         tile->add<CAnimation>(Assets::Instance().getAnimation(name), true);
-        tile->add<CTransform>(Vec2f(x, y));
+        tile->add<CTransform>(gridToMidPixel(x, y, tile));
         tile->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation(name).getSize().x,
                                       Assets::Instance().getAnimation(name).getSize().y));
       }
@@ -79,7 +79,7 @@ void Scene_Play::loadLevel(const std::string& levelPath)
         auto decoration = m_entityManager.addEntity("dec");
         fin >> name >> x >> y;
         decoration->add<CAnimation>(Assets::Instance().getAnimation(name), true);
-        decoration->add<CTransform>(Vec2f(x, y));
+        decoration->add<CTransform>(gridToMidPixel(x, y, decoration));
       }
       if (instruction == "Player")
       {
@@ -149,7 +149,7 @@ void Scene_Play::spawnPlayer()
 
     // here is a sample player entity which you can use to construct other entities
     m_player->add<CAnimation>(Assets::Instance().getAnimation("Stand"), true);
-    m_player->add<CTransform>(Vec2f(m_playerConfig.X, m_playerConfig.Y)); 
+    m_player->add<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player)); 
     m_player->add<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY));
     m_player->add<CState>("stand");
     m_player->add<CInput>();
