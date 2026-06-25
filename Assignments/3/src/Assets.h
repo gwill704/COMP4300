@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include "Vec2.hpp"
 
 class Animation;
 

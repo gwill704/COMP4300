@@ -10,4 +10,4 @@ Tile Block 7 0
 Tile Block 8 0
 Tile Block 9 0
 Tile Block 10 0
-Player 4 4 48 48 32 32 9.8 Block
+Player 4 4 48 48 1 1 9.8 Block

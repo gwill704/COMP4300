@@ -149,7 +149,10 @@ void Scene_Play::spawnPlayer()
 
     // here is a sample player entity which you can use to construct other entities
     m_player->add<CAnimation>(Assets::Instance().getAnimation("Stand"), true);
-    m_player->add<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player)); 
+    m_player->add<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player),
+                              Vec2f(m_playerConfig.SPEED, m_playerConfig.JUMP),
+                              Vec2f(1, 1),
+                              0); 
     m_player->add<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY));
     m_player->add<CState>("stand");
     m_player->add<CInput>();
@@ -184,6 +187,12 @@ void Scene_Play::sMovement()
     // TODO: Implement gravity's efect on the player
     // TODO: Implement the maximum player speed in both X and Y directions
     // NOTE: Setting an entity's scale.x to -1/1 will set facing to the left / right
+    auto & transform = m_player->get<CTransform>();
+    transform.prevPos = transform.pos;
+    transform.pos    += transform.velocity;
+
+
+    // bullets 
 }
 
 void Scene_Play::sLifespan()
