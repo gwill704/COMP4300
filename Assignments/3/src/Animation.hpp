@@ -60,9 +60,9 @@ public:
         return m_textureRect;
     }
 
-    const Vec2f& getSize const
+    const Vec2f getSize() const
     {
-      return Vec2f( m_textureRect.getSize().x, m_textureRect.getSize().y ); 
+      return Vec2f( m_textureRect.size.x, m_textureRect.size.y ); 
     }
 
     sf::Sprite getSprite() const
