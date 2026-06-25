@@ -60,6 +60,11 @@ public:
         return m_textureRect;
     }
 
+    const Vec2f& getSize const
+    {
+      return Vec2f( m_textureRect.getSize().x, m_textureRect.getSize().y ); 
+    }
+
     sf::Sprite getSprite() const
     {
         const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
