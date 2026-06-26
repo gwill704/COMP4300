@@ -193,10 +193,14 @@ void Scene_Play::sMovement()
     auto & transform = m_player->get<CTransform>();
     auto & input     = m_player->get<CInput>();
     
-    if (input.up)         transform.velocity.y -= m_playerConfig.JUMP;
-    if (input.down)       transform.velocity.y += m_playerConfig.JUMP;
-    if (input.left)       transform.velocity.x -= m_playerConfig.SPEED;
-    if (input.right)      transform.velocity.x += m_playerConfig.SPEED;
+    if (input.up)         transform.velocity.y = -m_playerConfig.JUMP;
+    if (input.down)       transform.velocity.y =  m_playerConfig.JUMP;
+    if (input.left)       transform.velocity.x = -m_playerConfig.SPEED;
+    if (input.right)      transform.velocity.x =  m_playerConfig.SPEED;
+
+    if (m_player->has<CGravity>())                            transform.velocity.y += m_player->get<CGravity>().gravity;
+    if (transform.velocity.y > m_playerConfig.MAXSPEED)       transform.velocity.y = m_playerConfig.MAXSPEED; 
+
     transform.prevPos = transform.pos;
     transform.pos    += transform.velocity;
 
