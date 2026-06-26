@@ -233,6 +233,10 @@ void Scene_Play::sCollision()
     //       used by the Animation system 
     // TODO: Check to see if the player has fallen down a hole (y > height())
     // TODO: Don't let the player walk off the left side of the map
+    for ( auto e : m_entityManager.getEntities("tile") )
+    {
+      Physics::GetOverlap(m_player, e);
+    }
 }
 
 void Scene_Play::sDoAction(const Action& action)
