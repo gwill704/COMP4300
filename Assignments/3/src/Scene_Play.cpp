@@ -20,6 +20,12 @@ void Scene_Play::init(const std::string& levelPath)
     registerAction(sf::Keyboard::Scancode::C,       "TOGGLE_COLLISION");
     registerAction(sf::Keyboard::Scancode::G,       "TOGGLE_GRID");
 
+    // Player movement
+    registerAction(sf::Keyboard::Scancode::A,       "GO_LEFT");
+    registerAction(sf::Keyboard::Scancode::D,       "GO_RIGHT");
+    registerAction(sf::Keyboard::Scancode::W,       "GO_UP");
+    registerAction(sf::Keyboard::Scancode::S,       "GO_DOWN");
+
     // TODO: Register all other gameplay Actions
 
     loadLevel(levelPath);
@@ -149,10 +155,7 @@ void Scene_Play::spawnPlayer()
 
     // here is a sample player entity which you can use to construct other entities
     m_player->add<CAnimation>(Assets::Instance().getAnimation("Stand"), true);
-    m_player->add<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player),
-                              Vec2f(m_playerConfig.SPEED, m_playerConfig.JUMP),
-                              Vec2f(1, 1),
-                              0); 
+    m_player->add<CTransform>(gridToMidPixel(m_playerConfig.X, m_playerConfig.Y, m_player));
     m_player->add<CBoundingBox>(Vec2f(m_playerConfig.CX, m_playerConfig.CY));
     m_player->add<CState>("stand");
     m_player->add<CInput>();
@@ -188,6 +191,12 @@ void Scene_Play::sMovement()
     // TODO: Implement the maximum player speed in both X and Y directions
     // NOTE: Setting an entity's scale.x to -1/1 will set facing to the left / right
     auto & transform = m_player->get<CTransform>();
+    auto & input     = m_player->get<CInput>();
+    
+    if (input.up)         transform.velocity.y -= m_playerConfig.JUMP;
+    if (input.down)       transform.velocity.y += m_playerConfig.JUMP;
+    if (input.left)       transform.velocity.x -= m_playerConfig.SPEED;
+    if (input.right)      transform.velocity.x += m_playerConfig.SPEED;
     transform.prevPos = transform.pos;
     transform.pos    += transform.velocity;
 
@@ -224,16 +233,23 @@ void Scene_Play::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
-        if      (action.name() == "TOGGLE_TEXTURE")       { m_drawTextures = !m_drawTextures; }
+        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = true; }
+        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = true; }
+        else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = true; }
+        else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = true; }
+        else if (action.name() == "TOGGLE_TEXTURE")       { m_drawTextures = !m_drawTextures; }
         else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
         else if (action.name() == "TOGGLE_GRID")          { m_drawGrid = !m_drawGrid; }
         else if (action.name() == "PAUSED")               { setPaused(!m_paused); }
         else if (action.name() == "QUIT")                 { onEnd(); }
-        else if (action.name() == "RIGHT")                { m_player->get<CInput>().right = true; }
     }
     else if (action.type() == "END")
     {
         // these should be false
+        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = false; }
+        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = false; }
+        else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = false; }
+        else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = false; } 
     }
 }
 
