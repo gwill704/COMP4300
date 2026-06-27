@@ -42,8 +42,8 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     //
     //        Remember that SFML has (0,0) int hte top left, while grid coordinates are specified in the bottom left.
     //        You cna get the size of the sfml window via m_game.window()..getSize();
-    Vec2f actualPosition( gridX * m_gridSize.x + entity->get<CAnimation>().animation.getSize().x / 2,
-                          m_game.window().getSize().y - (gridY * m_gridSize.y + entity->get<CAnimation>().animation.getSize().y / 2));
+    Vec2f actualPosition( gridX * m_gridSize.x,// + entity->get<CAnimation>().animation.getSize().x / 2,
+                          m_game.window().getSize().y - (gridY * m_gridSize.y));// + entity->get<CAnimation>().animation.getSize().y / 2));
 
     return actualPosition;
 }
@@ -79,6 +79,9 @@ void Scene_Play::loadLevel(const std::string& levelPath)
         tile->add<CTransform>(gridToMidPixel(x, y, tile));
         tile->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation(name).getSize().x,
                                       Assets::Instance().getAnimation(name).getSize().y));
+        // tiles' position is static and equal to current position
+        // To do that more general and if there were tiles that move, this should be implemented in sMovement
+        tile->get<CTransform>().prevPos = tile->get<CTransform>().pos;
       }
       if (instruction == "Dec")
       {
@@ -86,6 +89,8 @@ void Scene_Play::loadLevel(const std::string& levelPath)
         fin >> name >> x >> y;
         decoration->add<CAnimation>(Assets::Instance().getAnimation(name), true);
         decoration->add<CTransform>(gridToMidPixel(x, y, decoration));
+        // decorations' position is static and equal to current position
+        decoration->get<CTransform>().prevPos = decoration->get<CTransform>().pos;
       }
       if (instruction == "Player")
       {
@@ -97,17 +102,17 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     }
     
 
+    spawnPlayer();
+
+
+
+/*
     auto block = m_entityManager.addEntity("tile");
     block->add<CAnimation>(Assets::Instance().getAnimation("Block"), true);
     block->add<CTransform>(gridToMidPixel(1,1, block));
     // add a bounding box, this will now show up if we press the 'C' key
     block->add<CBoundingBox>(Vec2f(block->get<CAnimation>().animation.getSize().x,
                                    block->get<CAnimation>().animation.getSize().y));
-
-
-
-    spawnPlayer();
-/*
 
     // some sample entities
     auto brick = m_entityManager.addEntity("tile");
@@ -177,8 +182,8 @@ void Scene_Play::update()
     // TODO: implement pause functionality
 
     sMovement();
-    sLifespan();
     sCollision();
+    sLifespan();
     sAnimation();
     sGUI();
     sRender();
@@ -206,6 +211,9 @@ void Scene_Play::sMovement()
     transform.prevPos = transform.pos;
     transform.pos    += transform.velocity;
 
+    std::cout << "\n**sMOVEMENT**" << std::endl
+              << "prevPos   (" << transform.prevPos.x << ", " << transform.prevPos.y << ")" << std::endl
+              << "pos       (" << transform.pos.x     << ", " << transform.pos.y     << ")" << std::endl;
 
     // bullets 
 }
@@ -235,7 +243,50 @@ void Scene_Play::sCollision()
     // TODO: Don't let the player walk off the left side of the map
     for ( auto e : m_entityManager.getEntities("tile") )
     {
-      Physics::GetOverlap(m_player, e);
+      auto overlap         = Physics::GetOverlap(m_player, e);
+      if ( overlap == Vec2f(0,0) ) continue;
+      else
+      {
+        auto prevOverlap     = Physics::GetPreviousOverlap(m_player, e);
+        if ( prevOverlap == Vec2f(0,0) ) continue;
+        else
+        {
+          std::cout << "overlap (" << overlap.x << ", " << overlap.y << ")\n"
+                    << "prevOverlap (" << prevOverlap.x << ", " << prevOverlap.y << std::endl;
+          if      ( overlap.x > prevOverlap.x ) 
+          {
+            std::cout << "playerPosX (" << m_player->get<CTransform>().pos.x << ")" << " - " 
+                      << "overlapX (" << overlap.x << " = ";
+            m_player->get<CTransform>().pos.x -= overlap.x;
+            m_player->get<CTransform>().velocity.x = 0;
+            std::cout << "(" << m_player->get<CTransform>().pos.x << ")";
+          }
+          else if ( overlap.x < prevOverlap.x )
+          {
+            std::cout << "playerPosX (" << m_player->get<CTransform>().pos.x << ")" << " + " 
+                      << "overlapX (" << overlap.x << " = ";
+            m_player->get<CTransform>().pos.x += overlap.x;
+            m_player->get<CTransform>().velocity.x = 0;
+            std::cout << "(" << m_player->get<CTransform>().pos.x << ")";
+          }
+          if      ( overlap.y > prevOverlap.y )
+          {
+            std::cout << "playerPosY (" << m_player->get<CTransform>().pos.y << ")" << " - " 
+                      << "overlapY (" << overlap.y << " = ";
+            m_player->get<CTransform>().pos.y -= overlap.y;
+            m_player->get<CTransform>().velocity.y = 0;
+            std::cout << "(" << m_player->get<CTransform>().pos.y << ")";
+          }
+          else if ( overlap.y < prevOverlap.y )
+          {
+            std::cout << "playerPosY (" << m_player->get<CTransform>().pos.y << ")" << " + " 
+                      << "overlapY (" << overlap.y << " = ";
+            m_player->get<CTransform>().pos.y += overlap.y;
+            m_player->get<CTransform>().velocity.y = 0;
+            std::cout << "(" << m_player->get<CTransform>().pos.y << ")";
+          }
+        }
+      }
     }
 }
 
@@ -363,7 +414,7 @@ void Scene_Play::sRender()
             auto & box       = e->get<CBoundingBox>();
             sf::RectangleShape rect;
             rect.setSize(sf::Vector2f(box.size.x + 1, box.size.y + 1));
-            rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+ //           rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
             rect.setPosition( {transform.pos.x, transform.pos.y} );
             rect.setFillColor(sf::Color(0,0,0,0));
             rect.setOutlineColor(sf::Color(255, 255, 255, 255));
@@ -381,8 +432,8 @@ void Scene_Play::sRender()
             sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
             auto &  animation = e->get<CAnimation>().animation;
             sprite.setRotation(sf::degrees(transform.angle));
-            sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
-                                          animation.getSize().y / 2));
+  //          sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
+   //                                       animation.getSize().y / 2));
             sprite.setPosition({transform.pos.x, transform.pos.y});
             sprite.setScale({transform.scale.x, transform.scale.y});
             m_game.window().draw(sprite);
