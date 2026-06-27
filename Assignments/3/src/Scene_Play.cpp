@@ -431,14 +431,22 @@ void Scene_Play::sRender()
       { 
         if (e->has<CAnimation>())
         {
-            sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
-            auto &  animation = e->get<CAnimation>().animation;
-            sprite.setRotation(sf::degrees(transform.angle));
-            sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
-                                          animation.getSize().y / 2));
+          sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
+          auto &  animation = e->get<CAnimation>().animation;
+          sprite.setRotation(sf::degrees(transform.angle));
+          sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
+                                        animation.getSize().y / 2));
+          if (e->tag() == "player")
+          {
+            auto &  bb        = e->get<CBoundingBox>().size;
+            sprite.setPosition({ transform.pos.x, transform.pos.y - (animation.getSize().y - bb.y) / 2 });
+          }
+          else
+          {
             sprite.setPosition({transform.pos.x, transform.pos.y});
-            sprite.setScale({transform.scale.x, transform.scale.y});
-            m_game.window().draw(sprite);
+          }
+          sprite.setScale({transform.scale.x, transform.scale.y});
+          m_game.window().draw(sprite);
         }
       }
 
