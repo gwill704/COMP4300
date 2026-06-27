@@ -42,8 +42,8 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     //
     //        Remember that SFML has (0,0) int hte top left, while grid coordinates are specified in the bottom left.
     //        You cna get the size of the sfml window via m_game.window()..getSize();
-    Vec2f actualPosition( gridX * m_gridSize.x,// + entity->get<CAnimation>().animation.getSize().x / 2,
-                          m_game.window().getSize().y - (gridY * m_gridSize.y));// + entity->get<CAnimation>().animation.getSize().y / 2));
+    Vec2f actualPosition( gridX * m_gridSize.x + entity->get<CAnimation>().animation.getSize().x / 2,
+                          m_game.window().getSize().y - (gridY * m_gridSize.y + entity->get<CAnimation>().animation.getSize().y / 2));
 
     return actualPosition;
 }
@@ -211,10 +211,6 @@ void Scene_Play::sMovement()
     transform.prevPos = transform.pos;
     transform.pos    += transform.velocity;
 
-    std::cout << "\n**sMOVEMENT**" << std::endl
-              << "prevPos   (" << transform.prevPos.x << ", " << transform.prevPos.y << ")" << std::endl
-              << "pos       (" << transform.pos.x     << ", " << transform.pos.y     << ")" << std::endl;
-
     // bullets 
 }
 
@@ -248,42 +244,37 @@ void Scene_Play::sCollision()
       else
       {
         auto prevOverlap     = Physics::GetPreviousOverlap(m_player, e);
-        if ( prevOverlap == Vec2f(0,0) ) continue;
-        else
+
+        // case where it player comes vertical 
+        if ( prevOverlap.x > 0 )
         {
-          std::cout << "overlap (" << overlap.x << ", " << overlap.y << ")\n"
-                    << "prevOverlap (" << prevOverlap.x << ", " << prevOverlap.y << std::endl;
-          if      ( overlap.x > prevOverlap.x ) 
+          // comes from above 
+          if ( m_player->get<CTransform>().prevPos.y < e->get<CTransform>().prevPos.y )
           {
-            std::cout << "playerPosX (" << m_player->get<CTransform>().pos.x << ")" << " - " 
-                      << "overlapX (" << overlap.x << " = ";
-            m_player->get<CTransform>().pos.x -= overlap.x;
-            m_player->get<CTransform>().velocity.x = 0;
-            std::cout << "(" << m_player->get<CTransform>().pos.x << ")";
-          }
-          else if ( overlap.x < prevOverlap.x )
-          {
-            std::cout << "playerPosX (" << m_player->get<CTransform>().pos.x << ")" << " + " 
-                      << "overlapX (" << overlap.x << " = ";
-            m_player->get<CTransform>().pos.x += overlap.x;
-            m_player->get<CTransform>().velocity.x = 0;
-            std::cout << "(" << m_player->get<CTransform>().pos.x << ")";
-          }
-          if      ( overlap.y > prevOverlap.y )
-          {
-            std::cout << "playerPosY (" << m_player->get<CTransform>().pos.y << ")" << " - " 
-                      << "overlapY (" << overlap.y << " = ";
+            m_player->get<CTransform>().velocity.y = 0;
             m_player->get<CTransform>().pos.y -= overlap.y;
-            m_player->get<CTransform>().velocity.y = 0;
-            std::cout << "(" << m_player->get<CTransform>().pos.y << ")";
           }
-          else if ( overlap.y < prevOverlap.y )
+
+          // comes from below
+          if ( m_player->get<CTransform>().prevPos.y > e->get<CTransform>().prevPos.y )
           {
-            std::cout << "playerPosY (" << m_player->get<CTransform>().pos.y << ")" << " + " 
-                      << "overlapY (" << overlap.y << " = ";
-            m_player->get<CTransform>().pos.y += overlap.y;
             m_player->get<CTransform>().velocity.y = 0;
-            std::cout << "(" << m_player->get<CTransform>().pos.y << ")";
+            m_player->get<CTransform>().pos.y += overlap.y;
+          }
+        }
+        // case where it comes horizontal
+        else if ( prevOverlap.y > 0 )
+        {
+          // comes from left
+          if ( m_player->get<CTransform>().prevPos.x < e->get<CTransform>().prevPos.x )
+          {
+            m_player->get<CTransform>().velocity.x = 0;
+            m_player->get<CTransform>().pos.x -= overlap.x;
+          }
+          if ( m_player->get<CTransform>().prevPos.x > e->get<CTransform>().prevPos.x )
+          {
+            m_player->get<CTransform>().velocity.x = 0;
+            m_player->get<CTransform>().pos.x += overlap.x;
           }
         }
       }
@@ -414,7 +405,7 @@ void Scene_Play::sRender()
             auto & box       = e->get<CBoundingBox>();
             sf::RectangleShape rect;
             rect.setSize(sf::Vector2f(box.size.x + 1, box.size.y + 1));
- //           rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+            rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
             rect.setPosition( {transform.pos.x, transform.pos.y} );
             rect.setFillColor(sf::Color(0,0,0,0));
             rect.setOutlineColor(sf::Color(255, 255, 255, 255));
@@ -432,8 +423,8 @@ void Scene_Play::sRender()
             sf::Sprite sprite = e->get<CAnimation>().animation.getSprite();
             auto &  animation = e->get<CAnimation>().animation;
             sprite.setRotation(sf::degrees(transform.angle));
-  //          sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
-   //                                       animation.getSize().y / 2));
+            sprite.setOrigin(sf::Vector2f(animation.getSize().x / 2, 
+                                          animation.getSize().y / 2));
             sprite.setPosition({transform.pos.x, transform.pos.y});
             sprite.setScale({transform.scale.x, transform.scale.y});
             m_game.window().draw(sprite);
