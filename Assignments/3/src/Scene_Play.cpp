@@ -307,7 +307,11 @@ void Scene_Play::sDoAction(const Action& action)
         // these should be false
         if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = false; }
         else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = false; }
-        else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = false; }
+        else if (action.name() == "GO_UP")            
+        {
+          m_player->get<CInput>().up   = false;
+          if ( m_player->get<CTransform>().velocity.y < 0 )    m_player->get<CTransform>().velocity.y = 0; 
+        }
         else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = false; } 
     }
 }
