@@ -196,9 +196,15 @@ void Scene_Play::sMovement()
     // TODO: Implement the maximum player speed in both X and Y directions
     // NOTE: Setting an entity's scale.x to -1/1 will set facing to the left / right
     auto & transform = m_player->get<CTransform>();
+    auto & state     = m_player->get<CState>();
     auto & input     = m_player->get<CInput>();
     
-    if (input.up)         transform.velocity.y = -m_playerConfig.JUMP;
+    if (input.up && state.state != "jumping" )    
+    {
+      transform.velocity.y = -m_playerConfig.JUMP;
+      state.state = "jumping";
+    }
+
     if (input.down)       transform.velocity.y =  m_playerConfig.JUMP;
     if (input.left)       transform.velocity.x = -m_playerConfig.SPEED;
     else if (input.right) transform.velocity.x =  m_playerConfig.SPEED;
@@ -253,6 +259,7 @@ void Scene_Play::sCollision()
           {
             m_player->get<CTransform>().velocity.y = 0;
             m_player->get<CTransform>().pos.y -= overlap.y;
+            m_player->get<CState>().state = "ground";
           }
 
           // comes from below
