@@ -25,6 +25,7 @@ void Scene_Play::init(const std::string& levelPath)
     registerAction(sf::Keyboard::Scancode::D,       "GO_RIGHT");
     registerAction(sf::Keyboard::Scancode::W,       "GO_UP");
     registerAction(sf::Keyboard::Scancode::S,       "GO_DOWN");
+    registerAction(sf::Keyboard::Scancode::Space,   "SHOOT");
 
     // TODO: Register all other gameplay Actions
 
@@ -53,7 +54,7 @@ void Scene_Play::loadLevel(const std::string& levelPath)
     // reset the entity mangaer every time we load a level 
     m_entityManager = EntityManager();
 
-    // TODO: read in the level file and add the appropiae entities
+    // TODO : read in the level file and add the appropiae entities
     //       use the PlayerConfig struct m_playerConfig to store player properties
     //       this struct is defined at the top of Scene_Play.h
 
@@ -81,8 +82,7 @@ void Scene_Play::loadLevel(const std::string& levelPath)
           tile->add<CState>("noHit");
         }
         tile->add<CTransform>(gridToMidPixel(x, y, tile));
-        tile->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation(name).getSize().x,
-                                      Assets::Instance().getAnimation(name).getSize().y));
+        tile->add<CBoundingBox>( Assets::Instance().getAnimation(name).getSize() ); 
         // tiles' position is static and equal to current position
         // To do that more general and if there were tiles that move, this should be implemented in sMovement
         tile->get<CTransform>().prevPos = tile->get<CTransform>().pos;
@@ -177,6 +177,12 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 {
     // TODO: this should spawn a bullet at the given entity, 
     //       going in the direction the entity is facing 
+    auto & et = entity->get<CTransform>();
+    float speed = 30;
+    auto bullet = m_entityManager.addEntity("bullet");
+    bullet->add<CTransform>(et.pos, Vec2f( et.scale.x * speed, 0) , Vec2f(1, 1), et.angle);
+    bullet->add<CAnimation>(Assets::Instance().getAnimation(m_playerConfig.WEAPON), true);
+    bullet->add<CBoundingBox>( Assets::Instance().getAnimation(m_playerConfig.WEAPON).getSize() );
 }
 
 void Scene_Play::update()
@@ -223,6 +229,12 @@ void Scene_Play::sMovement()
     transform.pos    += transform.velocity;
 
     // bullets 
+    for ( auto b : m_entityManager.getEntities("bullet") )
+    {
+      auto & bt = b->get<CTransform>();
+      bt.prevPos = bt.pos;
+      bt.pos    += bt.velocity;
+    }
 }
 
 void Scene_Play::sLifespan()
@@ -264,7 +276,7 @@ void Scene_Play::sCollision()
           {
             m_player->get<CTransform>().velocity.y = 0;
             m_player->get<CTransform>().pos.y -= overlap.y;
-            m_player->get<CState>().state = "ground";
+            m_player->get<CState>().state = "stand";
           }
 
           // comes from below
@@ -298,6 +310,22 @@ void Scene_Play::sCollision()
           }
         }
       }
+
+      for ( auto b : m_entityManager.getEntities("bullet") )
+      {
+        auto overlap     = Physics::GetOverlap(b, e);
+        if ( overlap == Vec2f(0, 0) ) continue;
+        else
+        {
+          std::cout << "COLLISION!!" << std::endl;
+          b->destroy();
+          if ( e->get<CAnimation>().animation.getName() == "Brick" )
+          {
+            std::cout << "DESTROY!" << std::endl;
+            e->destroy();
+          }
+        }
+      }
     }
 }
 
@@ -309,6 +337,7 @@ void Scene_Play::sDoAction(const Action& action)
         else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = true; m_player->get<CTransform>().scale.x = 1;}
         else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = true; }
         else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = true; }
+        else if (action.name() == "SHOOT")                { m_player->get<CInput>().shoot = true; m_player->get<CInput>().canShoot = false; spawnBullet(m_player);}
         else if (action.name() == "TOGGLE_TEXTURE")       { m_drawTextures = !m_drawTextures; }
         else if (action.name() == "TOGGLE_COLLISION")     { m_drawCollision = !m_drawCollision; }
         else if (action.name() == "TOGGLE_GRID")          { m_drawGrid = !m_drawGrid; }
@@ -326,6 +355,7 @@ void Scene_Play::sDoAction(const Action& action)
           if ( m_player->get<CTransform>().velocity.y < 0 )    m_player->get<CTransform>().velocity.y = 0; 
         }
         else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = false; } 
+        else if (action.name() == "SHOOT")                { m_player->get<CInput>().canShoot = true; }
     }
 }
 
