@@ -278,8 +278,7 @@ void Scene_Play::sCollision()
             }
             else if ( e->get<CAnimation>().animation.getName() == "Question" )
             {
-              auto sprite = e->get<CAnimation>().animation.getSprite();
-              sprite.setColor(sf::Color(0,255,0));
+              e->get<CState>().state = "hit";
             }
           }
         }
@@ -306,8 +305,8 @@ void Scene_Play::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
-        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = true; }
-        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = true; }
+        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = true; m_player->get<CTransform>().scale.x = -1;}
+        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = true; m_player->get<CTransform>().scale.x = 1;}
         else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = true; }
         else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = true; }
         else if (action.name() == "TOGGLE_TEXTURE")       { m_drawTextures = !m_drawTextures; }
@@ -465,7 +464,7 @@ void Scene_Play::sRender()
             auto state = e->get<CState>().state;
             if (state == "noHit")
             {
-              float factor = 0.15 * std::sin(0.05 * m_currentFrame) + 0.85;
+              float factor = 0.15 * std::sin(0.10 * m_currentFrame) + 0.85;
               sprite.setColor(sf::Color(factor * 253, factor * 165, factor * 65));
             }
             if (state == "hit")
