@@ -34,11 +34,21 @@ public:
         }
         m_toAdd.clear();
 
-        for (auto it = m_entities.begin(); it != m_entities.end(); )
+        removeDeadEntities(m_entities);
+
+        for (auto & [tag, entityVec] : m_entityMap)
         {
-            if (!(*it)->isActive())  it = m_entities.erase(it); 
-            else                   ++it;
+          removeDeadEntities(entityVec);
         }
+    }
+
+    void removeDeadEntities(EntityVec & vec)
+    {
+      for (auto it = vec.begin(); it != vec.end(); )
+      {
+          if (!(*it)->isActive())  it = vec.erase(it); 
+          else                   ++it;
+      }
     }
 
     const EntityVec& getEntities() const

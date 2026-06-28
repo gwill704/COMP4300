@@ -71,6 +71,7 @@ public:
     {
       m_active = false;
     }
+
     const std::string& tag() const
     {
         return m_tag;
