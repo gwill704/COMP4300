@@ -76,6 +76,10 @@ void Scene_Play::loadLevel(const std::string& levelPath)
         auto tile = m_entityManager.addEntity("tile");
         fin >> name >> x >> y;
         tile->add<CAnimation>(Assets::Instance().getAnimation(name), true);
+        if (name == "Question")
+        {
+          tile->add<CState>("noHit");
+        }
         tile->add<CTransform>(gridToMidPixel(x, y, tile));
         tile->add<CBoundingBox>(Vec2f(Assets::Instance().getAnimation(name).getSize().x,
                                       Assets::Instance().getAnimation(name).getSize().y));
@@ -187,6 +191,7 @@ void Scene_Play::update()
     sAnimation();
     sGUI();
     sRender();
+    m_currentFrame++;
 }
 
 void Scene_Play::sMovement()
@@ -267,6 +272,15 @@ void Scene_Play::sCollision()
           {
             m_player->get<CTransform>().velocity.y = 0;
             m_player->get<CTransform>().pos.y += overlap.y;
+            if ( e->get<CAnimation>().animation.getName() == "Brick" )
+            {
+              e->destroy();
+            }
+            else if ( e->get<CAnimation>().animation.getName() == "Question" )
+            {
+              auto sprite = e->get<CAnimation>().animation.getSprite();
+              sprite.setColor(sf::Color(0,255,0));
+            }
           }
         }
         // case where it comes horizontal
@@ -444,6 +458,21 @@ void Scene_Play::sRender()
           else
           {
             sprite.setPosition({transform.pos.x, transform.pos.y});
+          }
+
+          if (animation.getName() == "Question")
+          {
+            auto state = e->get<CState>().state;
+            if (state == "noHit")
+            {
+              float factor = 0.15 * std::sin(0.05 * m_currentFrame) + 0.85;
+              sprite.setColor(sf::Color(factor * 253, factor * 165, factor * 65));
+            }
+            if (state == "hit")
+            {
+              float factor = 0.5;
+              sprite.setColor(sf::Color(factor * 253, factor * 165, factor * 65));
+            }
           }
           sprite.setScale({transform.scale.x, transform.scale.y});
           m_game.window().draw(sprite);

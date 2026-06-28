@@ -5,6 +5,7 @@
 #include "Assets.h"
 
 #include "EntityManager.hpp"
+#include <cmath>
 
 
 class Scene_Play : public Scene
@@ -19,11 +20,12 @@ protected:
     std::shared_ptr<Entity> m_player;
     std::string             m_levelPath;
     PlayerConfig            m_playerConfig;
-    bool                    m_drawTextures  = true;
-    bool                    m_drawCollision = false;
-    bool                    m_drawGrid      = false;
-    const Vec2f             m_gridSize  = { 64, 64 };
-    bool                    m_paused    = false;
+    bool                    m_drawTextures             = true;
+    bool                    m_drawCollision            = false;
+    bool                    m_drawGrid                 = false;
+    const Vec2f             m_gridSize                 = { 64, 64 };
+    bool                    m_paused                   = false;
+    int                     m_currentFrame             = 0;
 
     void init(const std::string& levelPath);
 
