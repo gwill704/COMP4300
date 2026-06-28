@@ -260,73 +260,76 @@ void Scene_Play::sCollision()
     //       used by the Animation system 
     // TODO: Check to see if the player has fallen down a hole (y > height())
     // TODO: Don't let the player walk off the left side of the map
-    for ( auto e : m_entityManager.getEntities("tile") )
+  for ( auto e : m_entityManager.getEntities("tile") )
+  {
+    auto overlap         = Physics::GetOverlap(m_player, e);
+    if ( overlap == Vec2f(0,0) ) continue;
+    else
     {
-      auto overlap         = Physics::GetOverlap(m_player, e);
-      if ( overlap == Vec2f(0,0) ) continue;
-      else
+      auto prevOverlap     = Physics::GetPreviousOverlap(m_player, e);
+
+      // case where it player comes vertical 
+      if ( prevOverlap.x > 0 )
       {
-        auto prevOverlap     = Physics::GetPreviousOverlap(m_player, e);
-
-        // case where it player comes vertical 
-        if ( prevOverlap.x > 0 )
+        // comes from above 
+        if ( m_player->get<CTransform>().prevPos.y < e->get<CTransform>().prevPos.y )
         {
-          // comes from above 
-          if ( m_player->get<CTransform>().prevPos.y < e->get<CTransform>().prevPos.y )
-          {
-            m_player->get<CTransform>().velocity.y = 0;
-            m_player->get<CTransform>().pos.y -= overlap.y;
-            m_player->get<CState>().state = "stand";
-          }
-
-          // comes from below
-          if ( m_player->get<CTransform>().prevPos.y > e->get<CTransform>().prevPos.y )
-          {
-            m_player->get<CTransform>().velocity.y = 0;
-            m_player->get<CTransform>().pos.y += overlap.y;
-            if ( e->get<CAnimation>().animation.getName() == "Brick" )
-            {
-              e->destroy();
-            }
-            else if ( e->get<CAnimation>().animation.getName() == "Question" )
-            {
-              e->get<CState>().state = "hit";
-            }
-          }
+          m_player->get<CTransform>().velocity.y = 0;
+          m_player->get<CTransform>().pos.y -= overlap.y;
+          m_player->get<CState>().state = "stand";
         }
-        // case where it comes horizontal
-        else if ( prevOverlap.y > 0 )
+
+        // comes from below
+        if ( m_player->get<CTransform>().prevPos.y > e->get<CTransform>().prevPos.y )
         {
-          // comes from left
-          if ( m_player->get<CTransform>().prevPos.x < e->get<CTransform>().prevPos.x )
+          m_player->get<CTransform>().velocity.y = 0;
+          m_player->get<CTransform>().pos.y += overlap.y;
+          if ( e->get<CAnimation>().animation.getName() == "Brick" )
           {
-            m_player->get<CTransform>().velocity.x = 0;
-            m_player->get<CTransform>().pos.x -= overlap.x;
+            e->destroy();
           }
-          if ( m_player->get<CTransform>().prevPos.x > e->get<CTransform>().prevPos.x )
+          else if ( e->get<CAnimation>().animation.getName() == "Question" )
           {
-            m_player->get<CTransform>().velocity.x = 0;
-            m_player->get<CTransform>().pos.x += overlap.x;
+            e->get<CState>().state = "hit";
           }
         }
       }
-
-      for ( auto b : m_entityManager.getEntities("bullet") )
+      // case where it comes horizontal
+      else if ( prevOverlap.y > 0 )
       {
-        auto overlap     = Physics::GetOverlap(b, e);
-        if ( overlap == Vec2f(0, 0) ) continue;
-        else
+        // comes from left
+        if ( m_player->get<CTransform>().prevPos.x < e->get<CTransform>().prevPos.x )
         {
-          std::cout << "COLLISION!!" << std::endl;
-          b->destroy();
-          if ( e->get<CAnimation>().animation.getName() == "Brick" )
-          {
-            std::cout << "DESTROY!" << std::endl;
-            e->destroy();
-          }
+          m_player->get<CTransform>().velocity.x = 0;
+          m_player->get<CTransform>().pos.x -= overlap.x;
+        }
+        if ( m_player->get<CTransform>().prevPos.x > e->get<CTransform>().prevPos.x )
+        {
+          m_player->get<CTransform>().velocity.x = 0;
+          m_player->get<CTransform>().pos.x += overlap.x;
+        }
+      }
+    } 
+  }
+
+  for ( auto b : m_entityManager.getEntities("bullet") )
+  {
+    for ( auto e : m_entityManager.getEntities("tile") )
+    {
+      auto overlap     = Physics::GetOverlap(b, e);
+      if ( overlap == Vec2f(0, 0) ) continue;
+      else
+      {
+        std::cout << "COLLISION!!" << std::endl;
+        b->destroy();
+        if ( e->get<CAnimation>().animation.getName() == "Brick" )
+        {
+          std::cout << "DESTROY!" << std::endl;
+          e->destroy();
         }
       }
     }
+  }
 }
 
 void Scene_Play::sDoAction(const Action& action)
