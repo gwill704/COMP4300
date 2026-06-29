@@ -320,6 +320,13 @@ void Scene_Play::sCollision()
     m_player->get<CTransform>().pos.x -= m_player->get<CTransform>().pos.x - m_player->get<CBoundingBox>().halfSize.x; 
   }
 
+  // If player falls restart level
+  if ( m_player->get<CTransform>().pos.y > m_game.window().getSize().y )
+  {
+    m_player->destroy();
+    m_player = NULL;
+    loadLevel(m_levelPath);
+  }
 
   for ( auto b : m_entityManager.getEntities("bullet") )
   {
