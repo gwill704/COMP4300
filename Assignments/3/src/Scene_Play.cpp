@@ -303,6 +303,8 @@ void Scene_Play::sCollision()
           m_player->get<CTransform>().velocity.x = 0;
           m_player->get<CTransform>().pos.x -= overlap.x;
         }
+
+        // comes from right
         if ( m_player->get<CTransform>().prevPos.x > e->get<CTransform>().prevPos.x )
         {
           m_player->get<CTransform>().velocity.x = 0;
@@ -312,6 +314,13 @@ void Scene_Play::sCollision()
     } 
   }
 
+  // Avoid going to the left
+  if ( (m_player->get<CTransform>().pos.x - m_player->get<CBoundingBox>().halfSize.x) < 0 )
+  {
+    m_player->get<CTransform>().pos.x -= m_player->get<CTransform>().pos.x - m_player->get<CBoundingBox>().halfSize.x; 
+  }
+
+
   for ( auto b : m_entityManager.getEntities("bullet") )
   {
     for ( auto e : m_entityManager.getEntities("tile") )
@@ -320,11 +329,9 @@ void Scene_Play::sCollision()
       if ( overlap == Vec2f(0, 0) ) continue;
       else
       {
-        std::cout << "COLLISION!!" << std::endl;
         b->destroy();
         if ( e->get<CAnimation>().animation.getName() == "Brick" )
         {
-          std::cout << "DESTROY!" << std::endl;
           e->destroy();
         }
       }
