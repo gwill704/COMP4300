@@ -1,5 +1,5 @@
-Texture TexStand images/player/pawn_stand.png
-Texture TexRun images/player/pawn_run.png
+Texture TexStand images/player/finn_stand.png
+Texture TexRun images/player/finn_run.png
 Texture TexBrick images/bricks/brick.png
 Texture TexBlock images/bricks/block.png
 Texture TexQuestion images/bricks/question.jpg
