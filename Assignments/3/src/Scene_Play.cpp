@@ -210,16 +210,29 @@ void Scene_Play::sMovement()
     auto & state     = m_player->get<CState>();
     auto & input     = m_player->get<CInput>();
     
-    if (input.up && state.state != "jumping" )    
+    if (input.up && input.canJump )    
     {
       transform.velocity.y = -m_playerConfig.JUMP;
       state.state = "jumping";
+      input.canJump = false;
     }
 
     if (input.down)       transform.velocity.y =  m_playerConfig.JUMP;
-    if (input.left)       transform.velocity.x = -m_playerConfig.SPEED;
-    else if (input.right) transform.velocity.x =  m_playerConfig.SPEED;
-    else                  transform.velocity.x = 0;
+    if (input.left)  
+    {
+      transform.velocity.x = -m_playerConfig.SPEED;
+      if ( input.canJump )      state.state = "run";
+    }
+    else if (input.right)
+    {
+      transform.velocity.x =  m_playerConfig.SPEED;
+       if ( input.canJump )     state.state = "run";
+    }
+    else               
+    {
+      transform.velocity.x = 0;
+      state.state = "stand";
+    }
 
     if (m_player->has<CGravity>())                            transform.velocity.y += m_player->get<CGravity>().gravity;
     if (transform.velocity.x > m_playerConfig.MAXSPEED)       transform.velocity.x = m_playerConfig.MAXSPEED; 
@@ -276,7 +289,7 @@ void Scene_Play::sCollision()
         {
           m_player->get<CTransform>().velocity.y = 0;
           m_player->get<CTransform>().pos.y -= overlap.y;
-          m_player->get<CState>().state = "stand";
+          m_player->get<CInput>().canJump = true;
         }
 
         // comes from below
@@ -383,13 +396,25 @@ void Scene_Play::sAnimation()
     // TODO: for each entity with an animation, call entity->get<CAnimation>().animation.update
     //       if the animation is not repeated, and it has ended, destroy the entity 
 
+
     // TODO: set the animation of the player based on its CState component
     // if the player's state has been set to running 
     if (m_player->get<CState>().state == "run")
     {
         // change its animation to a repeating run animation 
         // note: adding a component that already exists simply overwrites it 
-        m_player->add<CAnimation>(Assets::Instance().getAnimation("Run"), true);
+        auto & animation             = m_player->get<CAnimation>().animation;
+        auto & new_animation         = Assets::Instance().getAnimation("Run");
+        std::cout << "\n\nsAnimation : m_currentFrame \% animation.getSpeed()" << std::endl
+                  << "             " << m_currentFrame << " \% " << new_animation.getSpeed() << " = "
+                  << m_currentFrame % new_animation.getSpeed();
+        if ( m_currentFrame % new_animation.getSpeed() == 0 ) new_animation.update();
+        animation = new_animation;
+    }
+    if (m_player->get<CState>().state == "stand")
+    {
+        auto & animation  = m_player->get<CAnimation>().animation;
+        animation         = Assets::Instance().getAnimation("Stand");
     }
 }
 

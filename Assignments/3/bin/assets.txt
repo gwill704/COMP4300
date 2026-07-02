@@ -7,6 +7,6 @@ Animation Brick  TexBrick     1    0
 Animation Block  TexBlock     1    0
 Animation Question  TexQuestion     1    0
 Animation Stand  TexStand     1    0
-Animation Run    TexRun       2    10 
+Animation Run    TexRun       4    10 
 Font      Menu  fonts/StrangerThings_Regular.ttf
 Font      Grid  fonts/advanced_pixel-7.ttf

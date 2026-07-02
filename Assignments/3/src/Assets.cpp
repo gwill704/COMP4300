@@ -94,7 +94,7 @@ const sf::Texture& Assets::getTexture(const std::string& textureName) const
     }
 }
 
-const Animation& Assets::getAnimation(const std::string& animationName) const
+Animation& Assets::getAnimation(const std::string& animationName)
 {
     auto it = m_animationMap.find(animationName);
     if (it != m_animationMap.end())

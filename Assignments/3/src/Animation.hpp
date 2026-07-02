@@ -30,29 +30,44 @@ public:
         , m_textureName(textureName)
     {
         const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
-        m_textureRect = sf::IntRect( { 0, 0 }, { (int)(t.getSize().x / m_frameCount), (int)t.getSize().y } ); 
-    }
+        m_textureRect = sf::IntRect( { 0, 0 }, { (size_t)(t.getSize().x / m_frameCount), (size_t)t.getSize().y } ); }
 
-    //line 40
     // updates the animation to show the next frame, depending on its speed
     // animation loops when it reaches the end
     void update()
     {
-        m_currentFrame++;
+        if ( this->hasEnded() ) m_currentFrame = 0;
+        const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
 
         // TODO: 1) calculate the correct frame of animation to play based on currentFrame
-        //       2) set the texture rectangel properly (see constructor for sample)
+        sf::Vector2i frameXY = { m_currentFrame * ((size_t)(t.getSize().x / m_frameCount)), 0 };
+
+        // TODO  2) set the texture rectangel properly (see constructor for sample)
+        sf::Vector2i frameWH = { (m_currentFrame + 1) * ((size_t)(t.getSize().x / m_frameCount)), (size_t)t.getSize().y };
+
+        std::cout << "\n\nsAnimation:\ncurrentFrame Animation " << m_currentFrame << " fC " << m_frameCount << std::endl
+                  <<                  "(x,y) = " << "(" << frameXY.x << ", " << frameXY.y << ")\n"
+                  <<                  "(w,h) = " << "(" << frameWH.x << ", " << frameWH.y << ")\n";
+        m_textureRect = sf::IntRect( frameXY, frameWH );       
+        m_currentFrame++;
+        std::cout << "\ncurrentFrame++ = " << m_currentFrame << std::endl;
     }
 
-    bool hasEnded() const
+    const bool hasEnded() const
     {
         // TODO: detect when animation has ended (last frame was played) and return true
-        return false;
+      if (m_currentFrame == m_frameCount ) std::cout << "\nAnimation Ended\n";
+        return m_currentFrame == m_frameCount;
     }
 
     const std::string& getName() const
     {
         return m_name;
+    }
+
+    const size_t getSpeed() const 
+    {
+      return m_speed;
     }
 
     const sf::IntRect& getRect() const
