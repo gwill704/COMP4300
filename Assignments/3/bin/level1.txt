@@ -4,6 +4,7 @@ Tile Block 2 0
 Tile Block 3 0
 Tile Block 4 0
 Tile Block 5 0
+Tile Block 5 1
 Tile Block 6 0
 Tile Block 7 0
 Tile Block 8 0

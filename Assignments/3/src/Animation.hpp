@@ -30,7 +30,7 @@ public:
         , m_textureName(textureName)
     {
         const sf::Texture& t = Assets::Instance().getTexture(m_textureName);
-        m_textureRect = sf::IntRect( { 0, 0 }, { (size_t)(t.getSize().x / m_frameCount), (size_t)t.getSize().y } ); }
+        m_textureRect = sf::IntRect( { 0, 0 }, { ((size_t)t.getSize().x / m_frameCount), (size_t)t.getSize().y } ); }
 
     // updates the animation to show the next frame, depending on its speed
     // animation loops when it reaches the end
@@ -42,21 +42,15 @@ public:
         // TODO: 1) calculate the correct frame of animation to play based on currentFrame
         sf::Vector2i frameXY = { m_currentFrame * ((size_t)(t.getSize().x / m_frameCount)), 0 };
 
-        // TODO  2) set the texture rectangel properly (see constructor for sample)
-        sf::Vector2i frameWH = { (m_currentFrame + 1) * ((size_t)(t.getSize().x / m_frameCount)), (size_t)t.getSize().y };
-
-        std::cout << "\n\nsAnimation:\ncurrentFrame Animation " << m_currentFrame << " fC " << m_frameCount << std::endl
-                  <<                  "(x,y) = " << "(" << frameXY.x << ", " << frameXY.y << ")\n"
-                  <<                  "(w,h) = " << "(" << frameWH.x << ", " << frameWH.y << ")\n";
+        // TODO: 2) set the texture rectangel properly (see constructor for sample)
+        sf::Vector2i frameWH = { (size_t)(t.getSize().x / m_frameCount), (size_t)t.getSize().y };
         m_textureRect = sf::IntRect( frameXY, frameWH );       
         m_currentFrame++;
-        std::cout << "\ncurrentFrame++ = " << m_currentFrame << std::endl;
     }
 
     const bool hasEnded() const
     {
         // TODO: detect when animation has ended (last frame was played) and return true
-      if (m_currentFrame == m_frameCount ) std::cout << "\nAnimation Ended\n";
         return m_currentFrame == m_frameCount;
     }
 

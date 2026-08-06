@@ -395,7 +395,17 @@ void Scene_Play::sAnimation()
 
     // TODO: for each entity with an animation, call entity->get<CAnimation>().animation.update
     //       if the animation is not repeated, and it has ended, destroy the entity 
-
+    for (auto e : m_entityManager.getEntities() )
+    {
+      if (e->has<CAnimation>())
+      {
+        if (e->get<CAnimation>().animation.getSpeed() != 0)
+        {
+          if (m_currentFrame % e->get<CAnimation>().animation.getSpeed() == 0)
+          e->get<CAnimation>().animation.update();
+        }
+      }
+    }
 
     // TODO: set the animation of the player based on its CState component
     // if the player's state has been set to running 
@@ -404,12 +414,8 @@ void Scene_Play::sAnimation()
         // change its animation to a repeating run animation 
         // note: adding a component that already exists simply overwrites it 
         auto & animation             = m_player->get<CAnimation>().animation;
-        auto & new_animation         = Assets::Instance().getAnimation("Run");
-        std::cout << "\n\nsAnimation : m_currentFrame \% animation.getSpeed()" << std::endl
-                  << "             " << m_currentFrame << " \% " << new_animation.getSpeed() << " = "
-                  << m_currentFrame % new_animation.getSpeed();
-        if ( m_currentFrame % new_animation.getSpeed() == 0 ) new_animation.update();
-        animation = new_animation;
+        if (animation.getName() != "Run" )
+        animation         = Assets::Instance().getAnimation("Run");
     }
     if (m_player->get<CState>().state == "stand")
     {
