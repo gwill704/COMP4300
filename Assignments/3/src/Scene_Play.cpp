@@ -253,6 +253,18 @@ void Scene_Play::sMovement()
 void Scene_Play::sLifespan()
 {
     // TODO: Check lifespawn of entities that have them, and destroy them if they go over
+    for ( auto e : m_entityManager.getEntities() )
+    {
+      if ( e->has<CLifespan>() )
+      {
+        auto & lifespan = e->get<CLifespan>();
+        int timeAlive   = m_currentFrame - lifespan.frameCreated;
+        if ( timeAlive >= lifespan.lifespan )
+        {
+          e->destroy();
+        }
+      }
+    }
 }
 
 void Scene_Play::sCollision()
