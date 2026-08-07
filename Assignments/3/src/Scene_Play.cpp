@@ -363,8 +363,8 @@ void Scene_Play::sDoAction(const Action& action)
 {
     if (action.type() == "START")
     {
-        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().left = true; m_player->get<CTransform>().scale.x = -1;}
-        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().right = true; m_player->get<CTransform>().scale.x = 1;}
+        if      (action.name() == "GO_LEFT")              { m_player->get<CInput>().right = false; m_player->get<CInput>().left = true; m_player->get<CTransform>().scale.x = -1;}
+        else if (action.name() == "GO_RIGHT")             { m_player->get<CInput>().left  = false; m_player->get<CInput>().right = true; m_player->get<CTransform>().scale.x = 1;}
         else if (action.name() == "GO_UP")                { m_player->get<CInput>().up   = true; }
         else if (action.name() == "GO_DOWN")              { m_player->get<CInput>().down = true; }
         else if (action.name() == "SHOOT")                { m_player->get<CInput>().shoot = true; m_player->get<CInput>().canShoot = false; spawnBullet(m_player);}
