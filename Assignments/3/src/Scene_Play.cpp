@@ -226,7 +226,7 @@ void Scene_Play::sMovement()
     else if (input.right)
     {
       transform.velocity.x =  m_playerConfig.SPEED;
-       if ( input.canJump )     state.state = "run";
+      if ( input.canJump )     state.state = "run";
     }
     else               
     {
@@ -311,6 +311,9 @@ void Scene_Play::sCollision()
           m_player->get<CTransform>().pos.y += overlap.y;
           if ( e->get<CAnimation>().animation.getName() == "Brick" )
           {
+            auto explosion = m_entityManager.addEntity("explosion");
+            explosion->add<CTransform>(e->get<CTransform>().pos);
+            explosion->add<CAnimation>(Assets::Instance().getAnimation("Explosion"), false);
             e->destroy();
           }
           else if ( e->get<CAnimation>().animation.getName() == "Question" )
@@ -353,6 +356,7 @@ void Scene_Play::sCollision()
     loadLevel(m_levelPath);
   }
 
+  // bullets colliding 
   for ( auto b : m_entityManager.getEntities("bullet") )
   {
     for ( auto e : m_entityManager.getEntities("tile") )
