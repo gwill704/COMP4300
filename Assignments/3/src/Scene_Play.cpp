@@ -415,10 +415,15 @@ void Scene_Play::sAnimation()
     {
       if (e->has<CAnimation>())
       {
-        if (e->get<CAnimation>().animation.getSpeed() != 0)
+        auto & animation = e->get<CAnimation>().animation;
+        if (animation.getSpeed() != 0)
         {
-          if (m_currentFrame % e->get<CAnimation>().animation.getSpeed() == 0)
-          e->get<CAnimation>().animation.update();
+          if (animation.hasEnded() && !e->get<CAnimation>().repeat)
+          {
+            e->destroy();
+          }
+          if (m_currentFrame % animation.getSpeed() == 0)
+          animation.update();
         }
       }
     }
