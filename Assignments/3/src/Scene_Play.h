@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "GameEngine.h"
 #include "Scene.h"
 #include "Assets.h"
 

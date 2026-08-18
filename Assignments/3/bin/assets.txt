@@ -7,7 +7,7 @@ Texture TexPlosion images/bricks/explosion.png
 Animation Brick  TexBrick     1    0
 Animation Block  TexBlock     1    0
 Animation Question  TexQuestion     1    0
-Animation Explosion TexPlosion  10  7
+Animation Explosion TexPlosion  10  2
 Animation Stand  TexStand     1    0
 Animation Run    TexRun       4    7 
 Font      Menu  fonts/StrangerThings_Regular.ttf

@@ -1,9 +1,5 @@
 #include "Scene_Play.h"
 #include "Physics.hpp"
-#include "Assets.h"
-#include "GameEngine.h"
-#include "Components.hpp"
-#include "Action.hpp"
 
 Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
     : Scene(gameEngine)

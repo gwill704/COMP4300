@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Action.hpp"
 #include "Assets.h"
 #include "Scene.h"

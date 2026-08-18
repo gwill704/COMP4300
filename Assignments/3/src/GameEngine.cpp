@@ -33,9 +33,9 @@ void GameEngine::init(const std::string& assetsFile)
 
     // Current scene
     m_running = true;
-    std::string currentScene = "play";
-    std::string levelPath = std::string(ASSETS_PATH) + "level1.txt";
-    changeScene<Scene_Play>(currentScene, levelPath);
+    std::string currentScene = "menu";
+    //std::string levelPath = std::string(ASSETS_PATH) + "level1.txt";
+    changeScene<Scene_Menu>(currentScene);
 }
 
 void GameEngine::update()
