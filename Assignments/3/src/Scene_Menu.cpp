@@ -29,7 +29,12 @@ void Scene_Menu::sRender()
 void Scene_Menu::sDoAction(const Action& action)
 {
   std::cout << "Scene_Menu::sDoAction : " << action.name() << std::endl;
-  
+  if (action.type() == "START")
+  {
+    if      (action.name() == "QUIT")                  { m_game.quit(); }
+    else if (action.name() == "DOWN")                  { std::cout << "\nDOWN\n"; }
+    else if (action.name() == "UP"  )                  { std::cout << "\nUP\n"; }
+  }
 }
 
 void Scene_Menu::update()

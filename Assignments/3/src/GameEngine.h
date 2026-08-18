@@ -18,12 +18,11 @@ class GameEngine
     sf::RenderWindow                                         m_window;
     Assets&                                                  m_assets;
     std::string                                              m_currentScene;
-    bool                                                     m_running;
+    bool                                                     m_running = true;
     sf::Clock                                                m_deltaClock;
 
     void init(const std::string& assetsFile);
     void update();
-    void quit();
     
     template <typename T, typename... TArgs>
     void changeScene(const std::string& sceneName, TArgs&&... args);
@@ -33,6 +32,7 @@ class GameEngine
     void                sUserInput();
     
     public:
+    void quit();
     GameEngine(const std::string& assetsFile);
     void run();
     sf::RenderWindow&   window();
