@@ -62,8 +62,8 @@ void Scene_Menu::sDoAction(const Action& action)
   if (action.type() == "START")
   {
     if      (action.name() == "QUIT")                  { m_game.quit(); }
-    else if (action.name() == "DOWN")                  { std::cout << "\nDOWN\n"; m_level = static_cast<Level>(m_level + 1); }
-    else if (action.name() == "UP"  )                  { std::cout << "\nUP\n"  ; m_level = static_cast<Level>(m_level - 1); }
+    else if (action.name() == "DOWN")                  { std::cout << "\nDOWN\n"; m_level = static_cast<Level>((m_level + 1) % (Three + 1)); }
+    else if (action.name() == "UP"  )                  { std::cout << "\nUP\n"  ; m_level = static_cast<Level>(((Three + 1) + (m_level - 1)) % (Three + 1)); std::cout << m_level << std::endl;}
   }
 }
 
