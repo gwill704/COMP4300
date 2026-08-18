@@ -11,6 +11,8 @@ class Scene_Menu : public Scene
 {
   protected:
     void init();
+    enum Level { One, Two, Three };
+    Level m_level;
 
   public:
     Scene_Menu(GameEngine& m_game);
