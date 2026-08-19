@@ -14,14 +14,14 @@ typedef std::map<int, std::string> ActionMap;
 class Scene
 {
 protected: 
-    GameEngine&                            m_game;
+    GameEngine*                            m_game;
     EntityManager                          m_entityManager;
     int                                    m_frame;
     ActionMap                              m_actionMap;
     bool                                   m_paused;
 public:
     Scene() = delete;
-    Scene(GameEngine& game);
+    Scene(GameEngine* game);
     virtual ~Scene() = default;
 
     virtual void update() = 0;

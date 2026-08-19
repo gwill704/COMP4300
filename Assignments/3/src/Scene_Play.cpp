@@ -1,7 +1,7 @@
 #include "Scene_Play.h"
 #include "Physics.hpp"
 
-Scene_Play::Scene_Play(GameEngine& gameEngine, const std::string& levelPath)
+Scene_Play::Scene_Play(GameEngine* gameEngine, const std::string& levelPath)
     : Scene(gameEngine)
     , m_levelPath(levelPath)
 {
@@ -38,9 +38,9 @@ Vec2f Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entit
     //        The bottom-left corner of Animation should align with the bottom left of the grid
     //
     //        Remember that SFML has (0,0) int hte top left, while grid coordinates are specified in the bottom left.
-    //        You cna get the size of the sfml window via m_game.window()..getSize();
+    //        You cna get the size of the sfml window via m_game->window()..getSize();
     Vec2f actualPosition( gridX * m_gridSize.x + entity->get<CAnimation>().animation.getSize().x / 2,
-                          m_game.window().getSize().y - (gridY * m_gridSize.y + entity->get<CAnimation>().animation.getSize().y / 2));
+                          m_game->window().getSize().y - (gridY * m_gridSize.y + entity->get<CAnimation>().animation.getSize().y / 2));
 
     return actualPosition;
 }
@@ -345,7 +345,7 @@ void Scene_Play::sCollision()
   }
 
   // If player falls restart level
-  if ( m_player->get<CTransform>().pos.y > m_game.window().getSize().y )
+  if ( m_player->get<CTransform>().pos.y > m_game->window().getSize().y )
   {
     m_player->destroy();
     m_player = NULL;
@@ -444,7 +444,7 @@ void Scene_Play::sAnimation()
 void Scene_Play::onEnd()
 {
     // TODO: When the scene ends, change back to the MENU scene
-    //       use m_game.changeScene(correct params);
+    //       use m_game->changeScene(correct params);
     //       Implement when Menu scene is implemented
     exit(1);
 }
@@ -501,17 +501,17 @@ void Scene_Play::sGUI()
 void Scene_Play::sRender()
 {
     // color the background darker so you know that the game is paused
-    if (!m_paused) { m_game.window().clear(sf::Color(100, 100, 255)); }
-    else { m_game.window().clear(sf::Color(50, 50, 150)); }
+    if (!m_paused) { m_game->window().clear(sf::Color(100, 100, 255)); }
+    else { m_game->window().clear(sf::Color(50, 50, 150)); }
 
     sf::Text gridText(Assets::Instance().getFont("Grid"), "", 22);
 
     // set the viewport of the window to be centered on the player if it's far enough right 
     auto & pPos = m_player->get<CTransform>().pos;
-    float windowCenterX = std::max(m_game.window().getSize().x / 2.0f, pPos.x);
-    sf::View view = m_game.window().getView();
-    view.setCenter({ windowCenterX, m_game.window().getSize().y - view.getCenter().y });
-    m_game.window().setView(view);
+    float windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
+    sf::View view = m_game->window().getView();
+    view.setCenter({ windowCenterX, m_game->window().getSize().y - view.getCenter().y });
+    m_game->window().setView(view);
 
     for (auto e : m_entityManager.getEntities())
     {
@@ -529,7 +529,7 @@ void Scene_Play::sRender()
             rect.setFillColor(sf::Color(0,0,0,0));
             rect.setOutlineColor(sf::Color(255, 255, 255, 255));
             rect.setOutlineThickness(1);
-            m_game.window().draw(rect);
+            m_game->window().draw(rect);
             
         }
       }
@@ -569,7 +569,7 @@ void Scene_Play::sRender()
             }
           }
           sprite.setScale({transform.scale.x, transform.scale.y});
-          m_game.window().draw(sprite);
+          m_game->window().draw(sprite);
         }
       }
 
@@ -578,26 +578,26 @@ void Scene_Play::sRender()
     // draw the grid so that students can easily debug
     if (m_drawGrid)
     {
-        float leftX = m_game.window().getView().getCenter().x - m_game.window().getSize().x / 2;
-        float rightX = leftX + m_game.window().getSize().x + m_gridSize.x;
+        float leftX = m_game->window().getView().getCenter().x - m_game->window().getSize().x / 2;
+        float rightX = leftX + m_game->window().getSize().x + m_gridSize.x;
         float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
 
         for (float x = nextGridX; x < rightX; x += m_gridSize.x)
         {
-            drawLine(Vec2f(x, 0), Vec2f(x, m_game.window().getSize().y));
+            drawLine(Vec2f(x, 0), Vec2f(x, m_game->window().getSize().y));
         }
 
-        for (float y = 0; y < m_game.window().getSize().y; y += m_gridSize.y)
+        for (float y = 0; y < m_game->window().getSize().y; y += m_gridSize.y)
         {
-            drawLine(Vec2f(leftX, m_game.window().getSize().y - y), Vec2f(rightX, m_game.window().getSize().y - y));
+            drawLine(Vec2f(leftX, m_game->window().getSize().y - y), Vec2f(rightX, m_game->window().getSize().y - y));
 
             for (float x = nextGridX; x < rightX; x += m_gridSize.x)
             {
                 std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
                 std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
                 gridText.setString("(" + xCell + "," + yCell + ")");
-                gridText.setPosition({ x + 3, m_game.window().getSize().y - y - m_gridSize.y + 2});
-                m_game.window().draw(gridText);
+                gridText.setPosition({ x + 3, m_game->window().getSize().y - y - m_gridSize.y + 2});
+                m_game->window().draw(gridText);
             }
         }
     }
@@ -606,7 +606,7 @@ void Scene_Play::sRender()
 void Scene_Play::drawLine(const Vec2f& p1, const Vec2f& p2)
 {
     sf::Vertex line[] = { { {p1.x, p1.y}, sf::Color::White }, { {p2.x, p2.y}, sf::Color::White }};
-    m_game.window().draw(line, 2, sf::PrimitiveType::Lines);
+    m_game->window().draw(line, 2, sf::PrimitiveType::Lines);
 }
 
 void Scene_Play::setPaused(bool paused)

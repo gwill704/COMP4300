@@ -2,7 +2,7 @@
 #include "GameEngine.h"
 
 
-Scene::Scene(GameEngine& game) 
+Scene::Scene(GameEngine* game) 
         : m_game(game) {}
 
 
