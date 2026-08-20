@@ -16,7 +16,6 @@ class Scene_Menu : public Scene
     Level m_level;
 
     std::string m_levelPath;
-    bool        m_selected = false;    
 
   public:
     Scene_Menu(GameEngine* m_game);
