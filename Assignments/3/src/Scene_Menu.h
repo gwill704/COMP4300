@@ -16,6 +16,7 @@ class Scene_Menu : public Scene
     Level m_level;
 
     std::string m_levelPath;
+    std::string m_levelName;
 
   public:
     Scene_Menu(GameEngine* m_game);

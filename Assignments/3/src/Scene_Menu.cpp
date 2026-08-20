@@ -54,20 +54,20 @@ void Scene_Menu::sRender()
   m_game->window().draw(text);
 
 
-  std::string levelName;
   switch (m_level)
   {
     case One:
-      levelName = "level1.txt";
+      m_levelName = "level1";
       break;
     case Two:
-      levelName = "level2.txt";
+      m_levelName = "level2";
       break;
     case Three:
-      levelName = "level3.txt";
+      m_levelName = "level3";
       break;     
   }
-  m_levelPath = std::string(ASSETS_PATH) + levelName;
+  std::string levelPathExtension = ".txt";
+  m_levelPath = std::string(ASSETS_PATH) + m_levelName + levelPathExtension;
 
 }
 
@@ -78,7 +78,7 @@ void Scene_Menu::sDoAction(const Action& action)
     if      (action.name() == "QUIT"  )                  { m_game->quit(); }
     else if (action.name() == "DOWN"  )                  { m_level = static_cast<Level>((m_level + 1) % (Three + 1)); }
     else if (action.name() == "UP"    )                  { m_level = static_cast<Level>(((Three + 1) + (m_level - 1)) % (Three + 1)); }
-    else if (action.name() == "SELECT")                  { m_game->changeScene<Scene_Play>("play", m_levelPath); }
+    else if (action.name() == "SELECT")                  { m_game->changeScene<Scene_Play>(m_levelName, m_levelPath); }
   }
 }
 
