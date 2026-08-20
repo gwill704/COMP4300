@@ -73,7 +73,6 @@ void Scene_Menu::sRender()
 
 void Scene_Menu::sDoAction(const Action& action)
 {
-  std::cout << "Scene_Menu::sDoAction : " << action.name() << std::endl;
   if (action.type() == "START")
   {
     if      (action.name() == "QUIT"  )                  { m_game->quit(); }
@@ -85,7 +84,6 @@ void Scene_Menu::sDoAction(const Action& action)
 
 void Scene_Menu::update()
 {
-  std::cout << "Scene_Menu::update : " << std::endl;
   sRender();
   if (m_selected)
   {
