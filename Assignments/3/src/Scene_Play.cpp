@@ -446,7 +446,7 @@ void Scene_Play::onEnd()
     // TODO: When the scene ends, change back to the MENU scene
     //       use m_game->changeScene(correct params);
     //       Implement when Menu scene is implemented
-    exit(1);
+    m_game->changeScene<Scene_Menu>("menu");
 }
 
 void Scene_Play::sGUI()

@@ -74,41 +74,41 @@ sf::RenderWindow& GameEngine::window()
 
 void GameEngine::sUserInput() ///// TODODODODODO
 {
-    while (auto event = m_window.pollEvent())
-    {
-        ImGui::SFML::ProcessEvent(m_window, *event);
-        if (event->is<sf::Event::Closed>())
+  while (auto event = m_window.pollEvent())
+  {
+      ImGui::SFML::ProcessEvent(m_window, *event);
+      if (event->is<sf::Event::Closed>())
+      {
+        quit();
+      }
+      else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+      {
+        if (currentScene().getActionMap().find(static_cast<int>(keyPressed->scancode)) == currentScene().getActionMap().end()) continue;
+        else 
         {
-            quit();
+          Action action(currentScene().getActionMap().at(static_cast<int>(keyPressed->scancode)), "START");
+          currentScene().doAction(action);
         }
-        else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+      }
+        if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
         {
-          if (currentScene().getActionMap().find(static_cast<int>(keyPressed->scancode)) == currentScene().getActionMap().end()) continue;
-          else 
+          if (currentScene().getActionMap().find(static_cast<int>(keyReleased->scancode)) == currentScene().getActionMap().end()) continue;
+          else  
           {
-            Action action(currentScene().getActionMap().at(static_cast<int>(keyPressed->scancode)), "START");
+            Action action(currentScene().getActionMap().at(static_cast<int>(keyReleased->scancode)), "END");
             currentScene().doAction(action);
           }
         }
-          if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>())
-          {
-            if (currentScene().getActionMap().find(static_cast<int>(keyReleased->scancode)) == currentScene().getActionMap().end()) continue;
-            else  
-            {
-              Action action(currentScene().getActionMap().at(static_cast<int>(keyReleased->scancode)), "END");
-              currentScene().doAction(action);
-            }
-          }
-    }
+  }
 }
 
 void GameEngine::run()
 {
     while(m_running)
     {
+        sUserInput();
         update();
         m_window.display();
-        sUserInput();
     }
     ImGui::SFML::Shutdown();
 }

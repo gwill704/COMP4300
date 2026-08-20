@@ -7,7 +7,7 @@ Scene_Menu::Scene_Menu(GameEngine* gameEngine) : Scene(gameEngine)
 
 void Scene_Menu::init()
 {
-  registerAction(sf::Keyboard::Scancode::Escape,              "QUIT");
+  registerAction(sf::Keyboard::Scancode::Q,                   "QUIT");
   registerAction(sf::Keyboard::Scancode::S,                   "DOWN");
   registerAction(sf::Keyboard::Scancode::W,                   "UP");
   registerAction(sf::Keyboard::Scancode::Enter,               "SELECT");

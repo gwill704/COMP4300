@@ -2,6 +2,7 @@
 
 #include "GameEngine.h"
 #include "Scene.h"
+#include "Scene_Menu.h"
 #include "Assets.h"
 
 #include "EntityManager.hpp"

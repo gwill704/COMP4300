@@ -21,14 +21,12 @@ class GameEngine
     bool                                                     m_running = true;
     sf::Clock                                                m_deltaClock;
 
-    friend class Scene_Menu;
-
     void init(const std::string& assetsFile);
     void update();
     void quit();
     
-    template <typename T, typename... TArgs>
-    void changeScene(const std::string& sceneName, TArgs&&... args);
+    friend class Scene_Menu;
+
     Scene& currentScene();
 
     Assets&             getAssets();
@@ -38,6 +36,9 @@ class GameEngine
     GameEngine(const std::string& assetsFile);
     void run();
     sf::RenderWindow&   window();
+
+    template <typename T, typename... TArgs>
+    void changeScene(const std::string& sceneName, TArgs&&... args);
 };
 
 #include "GameEngine.hpp"
